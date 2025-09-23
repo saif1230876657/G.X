@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيقي المجمع</title>
+    <!-- رابط مكتبة أيقونات Font Awesome (يعمل ومضمون) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <main class="projects-container">
+        <iframe src="project1.html" class="project-frame" id="frame1"></iframe>
+        <iframe src="project2.html" class="project-frame" id="frame2"></iframe>
+        <iframe src="project3.html" class="project-frame" id="frame3"></iframe>
+        <iframe src="project4.html" class="project-frame" id="frame4"></iframe>
+    </main>
+
+    <!-- تم تغيير اسم الكلاس إلى top-nav ليكون أوضح -->
+    <nav class="top-nav">
+        <!-- مشروع 1: AI للأسئلة -->
+        <a href="#" data-index="0" class="active" title="AI للأسئلة"><i class="fa-solid fa-brain-circuit"></i></a>
+        
+        <!-- مشروع 2: منصة امتحانات -->
+        <a href="#" data-index="1" title="منصة امتحانات"><i class="fa-solid fa-clipboard-question"></i></a>
+        
+        <!-- مشروع 3: كتب PDF -->
+        <a href="#" data-index="2" title="كتب PDF"><i class="fa-solid fa-book-bookmark"></i></a>
+        
+        <!-- مشروع 4: منصة تواصل اجتماعي (الأيقونة التي تم إصلاحها) -->
+        <a href="#" data-index="3" title="منصة تواصل اجتماعي"><i class="fa-solid fa-users"></i></a>
+    </nav>
+
+    <script src="main.js"></script>
+</body>
+</html>
