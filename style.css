@@ -1,0 +1,82 @@
+body {
+    margin: 0;
+    font-family: sans-serif;
+    background-color: #1a1a2e; 
+    overflow: hidden; 
+}
+
+.projects-container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory; 
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; 
+}
+.projects-container::-webkit-scrollbar {
+    display: none;
+}
+
+.project-frame {
+    width: 100%;
+    height: 100%;
+    flex-shrink: 0;
+    scroll-snap-align: start; 
+    border: none;
+}
+
+.top-nav {
+    position: fixed;
+    top: 20px; 
+    left: 50%;
+    transform: translateX(-50%); 
+    width: 90%;
+    max-width: 400px;
+    height: 65px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 10px;
+    z-index: 100;
+}
+
+.top-nav a {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 26px;
+    padding: 15px;
+    border-radius: 50%; 
+    transition: all 0.3s ease-in-out;
+    text-decoration: none;
+}
+
+.top-nav a:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.top-nav a.active {
+    transform: translateY(-8px);
+}
+
+/* التوهج الناعم والواضح للأيقونات النشطة */
+.top-nav a:nth-child(1).active {
+    color: #ff3b30;
+    text-shadow: 0 0 8px #ff3b30, 0 0 12px #ff3b30;
+}
+.top-nav a:nth-child(2).active {
+    color: #007aff;
+    text-shadow: 0 0 8px #007aff, 0 0 12px #007aff;
+}
+.top-nav a:nth-child(3).active {
+    color: #34c759;
+    text-shadow: 0 0 8px #34c759, 0 0 12px #34c759;
+}
+.top-nav a:nth-child(4).active {
+    color: #af52de;
+    text-shadow: 0 0 8px #af52de, 0 0 12px #af52de;
+}
