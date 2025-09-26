@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة تعليمي - الرئيسية</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        /* --- CSS Variables for Theming --- */
+        :root {
+            --primary-font: 'Cairo', sans-serif;
+            --bg-color: #f8f9fa; --card-bg: #ffffff; --text-color: #212529; --heading-color: #0056b3;
+            --sub-heading-color: #007bff; --navbar-bg: #ffffff; --shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+            --border-color: #e9ecef; --border-radius: 15px; --video-card-hover-bg: rgba(0, 0, 0, 0.05);
+        }
+        body.dark-mode {
+            --bg-color: #121212; --card-bg: #1e1e1e; --text-color: #e0e0e0; --heading-color: #64b5f6;
+            --sub-heading-color: #82c3f8; --navbar-bg: #1e1e1e; --shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            --border-color: #333; --video-card-hover-bg: rgba(255, 255, 255, 0.08);
+        }
+
+        /* --- General Styles --- */
+        body {
+            font-family: var(--primary-font); background-color: var(--bg-color); color: var(--text-color);
+            margin: 0; padding-top: 80px; transition: background-color 0.3s, color 0.3s;
+        }
+        main { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        a { text-decoration: none; color: inherit; }
+
+        /* --- Navbar --- */
+        .navbar {
+            background-color: var(--navbar-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 15px 25px;
+            display: flex; justify-content: space-between; align-items: center;
+            position: fixed; top: 0; right: 0; left: 0; z-index: 1000; transition: background-color 0.3s;
+        }
+        .navbar-brand { font-size: 1.8rem; font-weight: 700; color: var(--heading-color); }
+        .nav-controls { display: flex; align-items: center; gap: 25px; }
+        #search-icon { font-size: 1.4rem; cursor: pointer; color: var(--text-color); transition: color 0.2s; }
+        #search-icon:hover { color: var(--heading-color); }
+
+        /* --- Page Header --- */
+        header { text-align: center; padding: 20px 0; }
+        header h1 { color: var(--heading-color); font-size: 2.5rem; }
+        header p { color: #6c757d; font-size: 1.1rem; }
+        .page-header { color: var(--heading-color); font-size: 2rem; text-align: center; margin-bottom: 30px; }
+        
+        /* --- Views Container --- */
+        .view { display: none; }
+        .view.active { display: block; }
+
+        /* --- Generic Controls --- */
+        .back-button {
+            display: inline-flex; align-items: center; gap: 10px; font-size: 1.1rem; font-weight: 600;
+            padding: 10px 20px; margin-bottom: 30px; border-radius: 10px; background-color: var(--card-bg);
+            box-shadow: var(--shadow); cursor: pointer; transition: background-color 0.2s;
+        }
+        .back-button:hover { background-color: var(--border-color); }
+        .no-content { text-align: center; font-size: 1.2rem; color: #888; padding: 50px; background-color: var(--card-bg); border-radius: var(--border-radius); }
+
+        /* --- Grades & Subjects Views --- */
+        .grades-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .grade-card {
+            background-color: var(--card-bg); border-radius: var(--border-radius); padding: 25px; box-shadow: var(--shadow);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px;
+            text-align: center; transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: pointer;
+        }
+        .grade-card:hover { transform: translateY(-7px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12); }
+        .grade-card i { font-size: 3rem; color: var(--sub-heading-color); margin-bottom: 10px; }
+        .grade-card span { font-size: 1.2rem; font-weight: 600; }
+        .subjects-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .subject-card {
+            background-color: var(--card-bg); padding: 20px; border-radius: var(--border-radius); text-align: center;
+            font-size: 1.1rem; font-weight: 600; box-shadow: var(--shadow); transition: transform 0.2s ease; cursor: pointer;
+        }
+        .subject-card:hover { transform: translateY(-5px); }
+
+        /* --- Video List Styles (for Lessons & Search) --- */
+        .video-list { max-width: 800px; margin: auto; display: flex; flex-direction: column; gap: 12px; }
+        .video-card {
+            display: flex; align-items: center; background: transparent; cursor: pointer;
+            padding: 6px; border-radius: 8px; transition: background 0.2s; border: 1px solid var(--border-color);
+        }
+        .video-card:hover { background: var(--video-card-hover-bg); }
+        .video-card .thumb { width: 120px; height: 68px; object-fit: cover; border-radius: 6px; flex-shrink: 0; margin-left: 12px; }
+        .video-card .title { margin-right: 12px; font-size: 14px; line-height: 1.4; flex-grow: 1; color: var(--text-color); }
+
+        /* --- Fullscreen Player --- */
+        #fullscreenPlayer {
+            position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: #000;
+            display: none; flex-direction: column; justify-content: flex-start; align-items: center;
+            z-index: 9999; padding-top: 20px;
+        }
+        #fullscreenPlayer iframe { width: 100%; height: 80vh; border: none; }
+        #fullscreenPlayer .player-back-button {
+            background: #fff; color: #333; border: none; padding: 10px 20px; font-size: 16px; border-radius: 30px;
+            margin-bottom: 15px; display: flex; align-items: center; gap: 8px; cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); transition: background 0.3s;
+        }
+        #fullscreenPlayer .player-back-button:hover { background: #f0f0f0; }
+        #fullscreenPlayer .player-back-button i { font-size: 18px; color: #333; }
+        
+        /* --- Search View Styles --- */
+        #youtubeSearchForm {
+            max-width: 700px; margin: 0 auto 40px auto; display: flex;
+            box-shadow: var(--shadow); border-radius: 50px; overflow: hidden;
+        }
+        #youtubeSearchForm input {
+            flex-grow: 1; border: none; padding: 15px 25px; font-size: 1rem;
+            background-color: var(--card-bg); color: var(--text-color); font-family: var(--primary-font);
+        }
+        #youtubeSearchForm input:focus { outline: none; }
+        #youtubeSearchForm button {
+            border: none; background-color: var(--sub-heading-color); color: white; padding: 0 25px;
+            cursor: pointer; font-size: 1.2rem; transition: background-color 0.2s;
+        }
+        #youtubeSearchForm button:hover { background-color: var(--heading-color); }
+        #searchResults.video-list { margin-top: 20px; }
+
+        /* --- Theme Toggle Switch --- */
+        .theme-switch { display: inline-block; height: 24px; position: relative; width: 44px; }
+        .theme-switch input { display:none; }
+        .slider { background-color: #ccc; bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0; transition: .4s; border-radius: 34px; }
+        .slider:before { background-color: #fff; bottom: 3px; content: ""; height: 18px; left: 3px; position: absolute; transition: .4s; width: 18px; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--heading-color); }
+        input:checked + .slider:before { transform: translateX(20px); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-brand">منصة تعليمي</div>
+        <div class="nav-controls">
+            <i class="fas fa-search" id="search-icon" title="بحث في يوتيوب"></i>
+            <label class="theme-switch" for="theme-toggle">
+                <input type="checkbox" id="theme-toggle" />
+                <div class="slider round"></div>
+            </label>
+        </div>
+    </nav>
+    
+    <main>
+        <!-- View 1: Grades Page -->
+        <div id="grades-view" class="view active">
+            <header>
+                <h1>الصفوف الدراسية</h1>
+                <p>اختر صفك الدراسي وابدأ رحلتك التعليمية</p>
+            </header>
+            <section class="grades-grid">
+                <div class="grade-card" data-grade="prep1"><i class="fas fa-book-open-reader"></i><span>الصف الأول الإعدادي</span></div>
+                <div class="grade-card" data-grade="prep2"><i class="fas fa-flask"></i><span>الصف الثاني الإعدادي</span></div>
+                <div class="grade-card" data-grade="prep3"><i class="fas fa-calculator"></i><span>الصف الثالث الإعدادي</span></div>
+            </section>
+        </div>
+
+        <!-- View 2: Subjects Page -->
+        <div id="subjects-view" class="view">
+            <div class="back-button" data-target="grades-view"><i class="fas fa-arrow-right"></i><span>الرجوع للصفوف</span></div>
+            <h2 id="subjects-header" class="page-header"></h2>
+            <div id="subjects-content"></div>
+        </div>
+        
+        <!-- View 3: Lessons Page -->
+        <div id="lessons-view" class="view">
+             <div class="back-button" data-target="subjects-view"><i class="fas fa-arrow-right"></i><span>الرجوع للمواد</span></div>
+            <h2 id="lessons-header" class="page-header"></h2>
+            <div id="videoList" class="video-list"></div>
+        </div>
+        
+        <!-- View 4: Search Page (NEW) -->
+        <div id="search-view" class="view">
+            <div class="back-button" id="search-back-button"><i class="fas fa-arrow-right"></i><span>الرجوع</span></div>
+            <h2 class="page-header">البحث في يوتيوب</h2>
+            <form id="youtubeSearchForm">
+                <input type="text" id="searchInput" placeholder="ابحث عن درس، مراجعة، أو شرح..." required>
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
+            <div id="searchResults" class="video-list">
+                <div class="no-content">ابحث عن أي محتوى تعليمي تريده من يوتيوب.</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Fullscreen player (remains the same) -->
+    <div id="fullscreenPlayer">
+        <button class="player-back-button" id="closePlayerBtn"><i class="fas fa-arrow-left"></i><span>رجوع</span></button>
+        <iframe id="videoPlayer" allowfullscreen></iframe>
+    </div>
+
+    <script>
+        // --- YouTube API Configuration ---
+        const API_KEY = "AIzaSyA4gfRf5sGQZ-a7ficcTcgU47aJV30cSgc";
+        
+        // --- Global State ---
+        let currentGradeKey = null;
+        let lastActiveView = 'grades'; // To remember which view to return to from search
+
+        // --- Site Data ---
+        const siteData = {
+            prep1: { name: 'الصف الأول الإعدادي', subjects: [ { name: 'اللغة العربية', type: 'playlist', id: 'PLN5tsGx_VvPjoTSfVkU9zQLGL_X5qLTqB' }, { name: 'اللغة الإنجليزية', type: 'playlist', id: 'PLJjjTqxEoQ0akzpLKlTsDByzBykkc5cUE' }, { name: 'الرياضيات', type: 'playlist', id: 'PLYGJU1U6eacOQvmfDT47NUu42GHotz1JJ' }, { name: 'العلوم', type: 'playlist', id: 'PLYGJU1U6eacMKUdiqH215q1OT1Qma884-' }, { name: 'الدراسات الاجتماعية', type: 'playlist', id: 'PLNZylwdJLcQk-im1WtMeGPnth1LpzcrmP' } ] },
+            prep2: { name: 'الصف الثاني الإعدادي', subjects: [ { name: 'اللغة العربية', type: 'playlist', id: 'PLN5tsGx_VvPiIHeV3UgjjVA0wZDO4cU9P' }, { name: 'اللغة الإنجليزية', type: 'playlist', id: 'PLJjjTqxEoQ0a1QSdWcmYELJkpqKfT6gU1' }, { name: 'الرياضيات', type: 'playlist', id: 'PLYGJU1U6eacMRufD4t9SKyUjO9yzn3UDQ' }, { name: 'العلوم', type: 'playlist', id: 'PLYGJU1U6eacPYShmDIBxsLQvDgbJGKyyL' }, { name: 'الدراسات الاجتماعية', type: 'playlist', id: 'PLFrbkG7x0IDdmsTUP40InvFFUql7SZuuY' } ] },
+            prep3: { 
+                name: 'الصف الثالث الإعدادي', 
+                subjects: [ 
+                    { name: 'اللغة العربية', type: 'playlist', id: 'PLN5tsGx_VvPjScG9VaomNU_Z0p6lSnAuB' }, 
+                    { name: 'اللغة الإنجليزية', type: 'playlist', id: 'PLJjjTqxEoQ0ZhuiJdsO0WgvfuAiblhvvk' }, 
+                    { name: 'الرياضيات', type: 'playlist', id: 'PLYGJU1U6eacNi7cPCw6C-93UZ4bOpG60h' }, 
+                    { name: 'العلوم', type: 'playlist', id: 'PLPmgcGdYFyCDZDah-y3WDAQIn6EG0g2vE' }, 
+                    { name: 'الدراسات الاجتماعية', type: 'playlist', id: 'PLNZylwdJLcQlX5FHPGC8yYodHWqk4nvnA' } 
+                ] 
+            }
+        };
+
+        // --- DOM Elements ---
+        const views = {
+            grades: document.getElementById('grades-view'),
+            subjects: document.getElementById('subjects-view'),
+            lessons: document.getElementById('lessons-view'),
+            search: document.getElementById('search-view') // New search view
+        };
+        const mainContent = document.querySelector('main');
+        const navbar = document.querySelector('.navbar');
+        const fullscreenPlayer = document.getElementById('fullscreenPlayer');
+        const videoPlayer = document.getElementById('videoPlayer');
+
+        // --- View Switching Function ---
+        function switchView(viewId) {
+            // Before switching away, find the current active view if it's not the search view
+            const currentActive = document.querySelector('.view.active');
+            if (currentActive && currentActive.id !== 'search-view') {
+                lastActiveView = currentActive.id.replace('-view', '');
+            }
+
+            Object.values(views).forEach(v => v.classList.remove('active'));
+            if (views[viewId]) {
+                views[viewId].classList.add('active');
+            }
+        }
+
+        // --- Content Generation (Grades, Subjects, Lessons) ---
+        function showSubjects(gradeKey) { currentGradeKey = gradeKey; const data = siteData[gradeKey]; document.getElementById('subjects-header').textContent = data.name; const contentDiv = document.getElementById('subjects-content'); contentDiv.innerHTML = ''; if (data.subjects && data.subjects.length > 0) { const container = document.createElement('div'); container.className = 'subjects-container'; data.subjects.forEach(subject => { const subjectName = typeof subject === 'string' ? subject : subject.name; const card = document.createElement('div'); card.className = 'subject-card'; card.textContent = subjectName; card.onclick = () => handleSubjectClick(subject); container.appendChild(card); }); contentDiv.appendChild(container); } else { contentDiv.innerHTML = `<div class="no-content">سيتم إضافة المواد قريبًا.</div>`; } switchView('subjects'); }
+        function handleSubjectClick(subjectData) { if (typeof subjectData === 'object' && subjectData.type === 'playlist') { showLessons(subjectData); } else { const subjectName = typeof subjectData === 'string' ? subjectData : subjectData.name; alert(`سيتم إضافة محتوى لمادة "${subjectName}" قريباً.`); } }
+        function showLessons(subjectData) { document.getElementById('lessons-header').textContent = `دروس مادة ${subjectData.name}`; const videoListDiv = document.getElementById('videoList'); videoListDiv.innerHTML = '<div class="no-content">جاري تحميل الدروس...</div>'; fetchAndDisplayPlaylist(subjectData.id, videoListDiv); switchView('lessons'); }
+
+        // --- Create Video Card Helper ---
+        function createVideoCard(videoData) {
+            const card = document.createElement('div');
+            card.className = 'video-card';
+            card.innerHTML = `
+                <img class="thumb" src="${videoData.thumbnail}" alt="${videoData.title}">
+                <div class="title">${videoData.title}</div>
+            `;
+            card.onclick = () => openPlayer(videoData.videoId);
+            return card;
+        }
+
+        // --- YouTube API Functions ---
+        function fetchAndDisplayPlaylist(playlistId, container) {
+            fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${API_KEY}`)
+            .then(res => res.json()).then(data => {
+                container.innerHTML = '';
+                if (data.items && data.items.length > 0) {
+                    data.items.forEach(item => {
+                        const snippet = item.snippet;
+                        if (snippet.title.toLowerCase().includes("private") || snippet.title.toLowerCase().includes("deleted")) return;
+                        const videoCard = createVideoCard({
+                            thumbnail: snippet.thumbnails.medium.url,
+                            title: snippet.title,
+                            videoId: snippet.resourceId.videoId
+                        });
+                        container.appendChild(videoCard);
+                    });
+                } else { container.innerHTML = '<div class="no-content">لا توجد فيديوهات في هذه القائمة حاليًا.</div>'; }
+            }).catch(error => { console.error("Error fetching YouTube playlist:", error); container.innerHTML = '<div class="no-content">حدث خطأ أثناء تحميل الدروس.</div>'; });
+        }
+
+        function handleSearchSubmit(event) {
+            event.preventDefault();
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+            const resultsContainer = document.getElementById('searchResults');
+            resultsContainer.innerHTML = '<div class="no-content">جاري البحث...</div>';
+
+            fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=20&q=${encodeURIComponent(query)}&key=${API_KEY}`)
+            .then(res => res.json()).then(data => {
+                resultsContainer.innerHTML = '';
+                if (data.items && data.items.length > 0) {
+                    data.items.forEach(item => {
+                        const videoCard = createVideoCard({
+                            thumbnail: item.snippet.thumbnails.medium.url,
+                            title: item.snippet.title,
+                            videoId: item.id.videoId
+                        });
+                        resultsContainer.appendChild(videoCard);
+                    });
+                } else { resultsContainer.innerHTML = '<div class="no-content">لم يتم العثور على نتائج لبحثك.</div>'; }
+            }).catch(error => { console.error("Error fetching search results:", error); resultsContainer.innerHTML = '<div class="no-content">حدث خطأ أثناء البحث.</div>'; });
+        }
+
+        // --- Player Functions ---
+        function openPlayer(videoId) { videoPlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`; fullscreenPlayer.style.display = 'flex'; mainContent.style.display = 'none'; navbar.style.display = 'none'; }
+        function closePlayer() { videoPlayer.src = ''; fullscreenPlayer.style.display = 'none'; mainContent.style.display = 'block'; navbar.style.display = 'flex'; }
+
+        // --- Initial Setup on DOMContentLoaded ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme Toggle Logic
+            const themeToggle = document.getElementById('theme-toggle');
+            const applyTheme = (theme) => { document.body.classList.toggle('dark-mode', theme === 'dark'); themeToggle.checked = (theme === 'dark'); };
+            themeToggle.addEventListener('change', () => { const theme = themeToggle.checked ? 'dark' : 'light'; localStorage.setItem('theme', theme); applyTheme(theme); });
+            applyTheme(localStorage.getItem('theme') || 'light');
+
+            // --- Navigation Event Listeners ---
+            document.querySelectorAll('.grade-card').forEach(card => card.addEventListener('click', () => showSubjects(card.getAttribute('data-grade'))));
+            document.querySelectorAll('.back-button[data-target]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetView = button.getAttribute('data-target').replace('-view', '');
+                    if(targetView === 'subjects' && currentGradeKey) { showSubjects(currentGradeKey); } 
+                    else { switchView(targetView); }
+                });
+            });
+            
+            // --- Search Listeners (NEW) ---
+            document.getElementById('search-icon').addEventListener('click', () => switchView('search'));
+            document.getElementById('youtubeSearchForm').addEventListener('submit', handleSearchSubmit);
+            document.getElementById('search-back-button').addEventListener('click', () => switchView(lastActiveView));
+
+            // Player close button
+            document.getElementById('closePlayerBtn').addEventListener('click', closePlayer);
+        });
+    </script>
+</body>
+</html>
