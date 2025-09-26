@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Saif AI - دردشة ذكاء اصطناعي</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000000" />
+  <link rel="icon" href="https://i.postimg.cc/cCLZPwnw/2dd388fc-039e-4ce1-ab35-4f9db8cc40b2.png" type="image/png">
+
+  <meta property="og:title" content="Saif AI - دردشة ذكاء اصطناعي" />
+  <meta property="og:description" content="مساعد ذكاء اصطناعي عربي متقدم للإجابة على كافة أسئلتك، مع دعم متخصص للمواد الدراسية." />
+  <meta property="og:image" content="https://i.postimg.cc/cCLZPwnw/2dd388fc-039e-4ce1-ab35-4f9db8cc40b2.png" />
+  <meta property="og:url" content="https://tinyurl.com/saif-ai" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #373737; --primary-hover-color: #4a4a4a; --primary-glow-color: rgba(224, 224, 224, 0.1);
+      --secondary-color: #BDBDBD;
+      --bg-main-color: #0d0d0d;
+      --bg-main: radial-gradient(ellipse at 50% 0%, #1a1a1a 0%, #0d0d0d 75%);
+      --bg-surface: #101010; --bg-surface-raised: #1c1c1c;
+      --bg-input: #1c1c1c; --text-primary: #f0f4f8; --text-secondary: #a0a8b2; --text-on-primary: #FFFFFF;
+      --border-color: #2a2a2a; --border-color-light: #404040; --success-color: #4ce083; --error-color: #ff5c5c;
+      --shadow-xs: 0 1px 3px rgba(0,0,0,0.5); --shadow-sm: 0 4px 6px rgba(0,0,0,0.6); --shadow-md: 0 6px 12px rgba(0,0,0,0.7);
+      --border-radius-sm: 8px; --border-radius-md: 12px; --border-radius-lg: 16px; --border-radius-xl: 24px; --header-height: 52px;
+    }
+    * { box-sizing: border-box; font-family: 'Tajawal', sans-serif; margin: 0; padding: 0; scrollbar-width: thin; scrollbar-color: var(--secondary-color) var(--bg-surface); }
+    *::-webkit-scrollbar { width: 6px; height: 6px; }
+    *::-webkit-scrollbar-track { background: var(--bg-surface); border-radius: 3px; }
+    *::-webkit-scrollbar-thumb { background-color: var(--secondary-color); border-radius: 3px; }
+    html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+    body { background: var(--bg-main-color); display: flex; justify-content: center; align-items: center; color: var(--text-primary); }
+    .container { 
+        width: 100%; height: 100%; background: var(--bg-main); border: 1px solid var(--border-color); 
+        border-radius: 0; display: flex; flex-direction: column; overflow: hidden; position: relative;
+        transition: background 0.5s ease-in-out;
+    }
+    .container.is-focused {
+        background: #050505;
+    }
+    
+    .space-background {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        overflow: hidden; pointer-events: none; z-index: 0;
+    }
+    .moon {
+        position: absolute;
+        width: 60px;
+        opacity: 0.6;
+        filter: drop-shadow(0 0 15px rgba(224, 224, 224, 0.3));
+        transition: top 1s ease-in-out, right 1s ease-in-out;
+    }
+    .star {
+        position: absolute; background-color: white; border-radius: 50%;
+        width: 2px; height: 2px; box-shadow: 0 0 8px 1px rgba(255, 255, 255, 0.7);
+        animation: twinkle 5s infinite alternate;
+    }
+    .star:nth-of-type(1) { top: 15%; left: 20%; animation-delay: 1s; }
+    .star:nth-of-type(2) { top: 25%; left: 70%; animation-delay: 2.5s; width: 1px; height: 1px; }
+    .star:nth-of-type(3) { top: 50%; left: 10%; animation-delay: 0.5s; }
+    .star:nth-of-type(4) { top: 60%; left: 90%; animation-delay: 3s; width: 1px; height: 1px; }
+    .star:nth-of-type(5) { top: 80%; left: 40%; animation-delay: 1.8s; }
+    @keyframes twinkle {
+        from { opacity: 0.4; } to { opacity: 1; }
+    }
+
+    .header { background: transparent; padding: 0.4rem 0.8rem; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 10; height: var(--header-height); position: absolute; top: 0; left: 0; right: 0; }
+    .header-group { display: flex; align-items: center; gap: 0.5rem; position: relative; }
+    .header .header-icon { cursor: pointer; transition: color 0.2s ease-in-out, transform 0.2s ease; color: var(--text-secondary); font-size: 1.2rem; z-index: 11; padding: 5px; }
+    .settings-btn:hover { color: var(--text-on-primary); transform: rotate(15deg) scale(1.1); }
+    .history-btn:hover { color: var(--text-on-primary); transform: scale(1.15); }
+    
+    .header-astronaut-icon {
+        width: 28px;
+        height: 28px;
+        animation: float 6s ease-in-out infinite;
+    }
+    .header h1 {
+        font-family: 'Aref Ruqaa', serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        white-space: nowrap;
+    }
+    .header-btn { background-color: var(--bg-surface-raised); color: var(--text-primary); border: 1px solid var(--border-color-light); padding: 0.4rem 0.7rem; border-radius: var(--border-radius-md); cursor: pointer; font-size: 0.75rem; font-weight: 500; transition: all 0.25s ease; box-shadow: var(--shadow-xs); }
+    .header-btn:hover { background-color: var(--primary-hover-color); color: var(--text-on-primary); border-color: var(--primary-color); transform: translateY(-1px); box-shadow: var(--shadow-sm), 0 0 8px var(--primary-glow-color); }
+    .dropdown-menu { display: none; position: absolute; top: calc(100% + 5px); background-color: var(--bg-surface-raised); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); box-shadow: var(--shadow-md); z-index: 100; min-width: 200px; overflow: hidden; }
+    .dropdown-menu button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 15px; background: none; border: none; color: var(--text-primary); cursor: pointer; font-size: 0.9rem; text-align: right; }
+    html[dir="ltr"] .dropdown-menu button { text-align: left; }
+    .dropdown-menu button:hover { background-color: var(--primary-color); color: var(--text-on-primary); }
+    .dropdown-menu button i { width: 15px; text-align: center; }
+    .dropdown-menu button.danger:hover { background-color: var(--error-color); color: white; }
+    #languageBtn { padding: 0.4rem; width: 34px; height: 34px; font-size: 1.1rem; }
+    .chat-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0; padding-top: var(--header-height); position: relative; }
+    #welcomeAnimationContainer { 
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+        z-index: 1; display: none; justify-content: center; align-items: center; pointer-events: none;
+    }
+    .astronaut-animation-wrapper {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 1.5s ease-out forwards;
+        opacity: 0;
+    }
+    .welcome-astronaut {
+        width: 100px;
+        height: 100px;
+        animation: float 6s ease-in-out infinite;
+    }
+    @keyframes fadeIn { to { opacity: 0.7; } }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+    #subjectsViewContainer { background-color: var(--bg-main-color); padding: 1.5rem; display: none; flex-direction: column; align-items: center; }
+    .subjects-view-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); max-width: 700px; }
+    .subjects-view-header h2 { font-size: 1.6rem; color: var(--text-primary); }
+    .back-to-chat-btn { background-color: var(--bg-surface-raised); color: var(--text-primary); border: 1px solid var(--border-color-light); padding: 0.7rem 1.2rem; border-radius: var(--border-radius-md); cursor: pointer; font-size: 0.9rem; transition: all 0.25s ease; box-shadow: var(--shadow-xs); display: flex; align-items: center; gap: 0.5rem; }
+    .back-to-chat-btn:hover { background-color: var(--primary-hover-color); color: var(--text-on-primary); border-color: var(--primary-color); transform: translateY(-2px); box-shadow: var(--shadow-sm), 0 0 10px var(--primary-glow-color); }
+    #subjectListContainer { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; max-width: 700px; overflow-y: auto; padding: 10px; }
+    .subject-item-btn { background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color); padding: 18px 22px; font-size: 1rem; border-radius: var(--border-radius-md); cursor: pointer; transition: all 0.3s ease; text-align: center; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 0; }
+    .subject-item-btn:hover { background-color: var(--primary-hover-color); color: var(--text-on-primary); border-color: var(--primary-color); transform: translateY(-4px) scale(1.03); box-shadow: var(--shadow-md), 0 0 15px var(--primary-glow-color); }
+    .subject-item-btn i { font-size: 2.2rem; margin-bottom: 5px; color: var(--secondary-color); transition: color 0.3s ease; }
+    .subject-item-btn:hover i { color: var(--text-on-primary); }
+    .chat-container { flex: 1; padding: 1.5rem 1rem 150px 1rem; overflow-y: auto; background: transparent; scroll-behavior: smooth; min-height: 0; }
+    .message { max-width: 85%; margin-bottom: 2rem; display: flex; flex-direction: column; animation: messageAppear 0.4s ease-out; word-wrap: break-word; white-space: pre-wrap; line-height: 1.7; }
+    @keyframes messageAppear { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .message-content .sent-image { display: block; max-width: 250px; width: 100%; border-radius: var(--border-radius-md); margin-top: 10px; cursor: pointer; border: 1px solid var(--border-color-light); transition: transform 0.2s ease; }
+    .message-content .sent-image:hover { transform: scale(1.03); }
+    .typing-indicator span { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: var(--text-secondary); margin: 0 2px; animation: typing-bounce 1.4s infinite ease-in-out both; }
+    .typing-indicator span:nth-child(1) { animation-delay: -0.32s; } .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes typing-bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+    .message-header { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 8px; font-weight: 500; padding: 0 0.5rem; }
+    .delete-btn { color: var(--text-secondary); font-size: 0.8rem; cursor: pointer; transition: color 0.2s, transform 0.2s; opacity: 0.4; padding: 3px 5px; }
+    .message:hover .delete-btn { opacity: 0.8; }
+    .delete-btn:hover { opacity: 1; color: var(--error-color); transform: scale(1.15); }
+    .message.user { margin-left: auto; align-items: flex-end; }
+    .message.user .message-header { flex-direction: row-reverse; }
+    .message.bot { margin-right: auto; align-items: flex-start; }
+    html[dir="ltr"] .message.user { margin-right: auto; margin-left: 0; align-items: flex-start; }
+    html[dir="ltr"] .message.bot { margin-left: auto; margin-right: 0; align-items: flex-end; }
+    
+    .message.user .message-content { background-color: var(--primary-color); color: var(--text-on-primary); padding: 0.8rem 1rem; border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 var(--border-radius-lg); }
+    .message.bot .message-content { background-color: transparent; color: var(--text-primary); padding: 0.2rem 0.5rem; }
+    .message.bot .message-content hr { border: none; border-top: 1px solid var(--border-color); margin: 1rem 0; }
+    .message.bot .message-content strong { color: var(--secondary-color); font-weight: bold; }
+    
+    .message-actions { margin-top: 10px; display: flex; gap: 8px; padding: 0 8px; flex-wrap: wrap; }
+    .message-actions button { background: var(--bg-surface-raised); border: 1px solid var(--border-color); cursor: pointer; font-size: 0.85rem; padding: 5px 9px; color: var(--text-secondary); transition: all 0.25s ease; border-radius: var(--border-radius-sm); display: flex; align-items: center; gap: 5px; }
+    .message-actions button:hover { color: var(--text-on-primary); background-color: var(--primary-hover-color); border-color: var(--primary-color); box-shadow: 0 0 10px var(--primary-glow-color); }
+    .message-actions button.speaking i { animation: pulseIcon 1.2s infinite ease-in-out; color: var(--success-color);}
+    @keyframes pulseIcon { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+
+    .chat-input-area { position: absolute; bottom: 0; left: 0; right: 0; background: transparent; padding: 0.8rem 1rem; z-index: 5; }
+    .chat-input-area::before { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 150px; background: linear-gradient(to top, var(--bg-main-color) 20%, transparent 100%); pointer-events: none; z-index: 4; }
+    .chat-input-wrapper { position: relative; z-index: 5; max-width: 800px; margin: 0 auto; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--border-radius-xl); transition: border-color 0.25s ease, box-shadow 0.25s ease, padding 0.2s ease; display: flex; flex-direction: column; box-shadow: var(--shadow-md); }
+    .chat-input-wrapper:focus-within { border-color: var(--secondary-color); box-shadow: var(--shadow-md), 0 0 0 3px var(--primary-glow-color); }
+    .chat-input-main { display: flex; align-items: flex-end; width: 100%; }
+    .chat-input-wrapper textarea { flex: 1; padding: 0.8rem 0; margin: 0 5px; border: none; resize: none; font-size: 0.95rem; outline: none; background: transparent; color: var(--text-primary); max-height: 150px; line-height: 1.6; }
+    .chat-input-wrapper textarea::placeholder { color: var(--text-secondary); opacity: 0.6; }
+    #imagePreviewContainer { display: none; padding: 8px 12px 0; gap: 10px; flex-wrap: wrap; }
+    .preview-item { position: relative; }
+    .preview-item img { width: 60px; height: 60px; border-radius: var(--border-radius-sm); object-fit: cover; }
+    .remove-preview-btn { position: absolute; top: -5px; right: -5px; width: 20px; height: 20px; border-radius: 50%; background-color: var(--error-color); color: white; border: none; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 0.8rem; }
+    .chat-input-btn { background: transparent; border: none; color: var(--text-secondary); width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; transition: all 0.25s ease; flex-shrink: 0; }
+    .chat-input-btn:hover { color: var(--text-primary); transform: scale(1.1); }
+    #toggleUploadBtn { order: 3; }
+    html[dir="ltr"] #toggleUploadBtn { order: 1; }
+    #sendOrVoiceBtn { order: 1; }
+    html[dir="ltr"] #sendOrVoiceBtn { order: 3; }
+    .chat-input-main textarea { order: 2; }
+    .voice-indicator { display: none; align-items: center; justify-content: center; position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%); background: var(--bg-surface-raised); color: var(--text-primary); padding: 8px 16px; border-radius: var(--border-radius-md); box-shadow: var(--shadow-md); gap: 8px; z-index: 10; opacity: 0; transition: opacity 0.3s ease; }
+    .voice-indicator.active { display: flex; opacity: 1; }
+    .voice-indicator i { color: var(--error-color); animation: pulseMic 1.5s infinite ease-in-out; }
+    @keyframes pulseMic { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+    .chat-input-btn.recording { color: var(--error-color); }
+    #uploadOptionsContainer { display: flex; flex-direction: column; gap: 8px; background-color: var(--bg-surface-raised); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 10px; position: absolute; bottom: calc(100% + 5px); right: 5px; z-index: 10; box-shadow: var(--shadow-md); opacity: 0; visibility: hidden; transform: translateY(10px) scale(0.95); transition: all 0.25s ease-out; }
+    html[dir="ltr"] #uploadOptionsContainer { left: 5px; right: auto; }
+    #uploadOptionsContainer.active { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+    #uploadOptionsContainer button { background: var(--bg-input); color: var(--text-secondary); border: 1px solid var(--border-color-light); border-radius: var(--border-radius-sm); padding: 8px 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; transition: all 0.2s ease; text-align: right; width: 100%; white-space: nowrap; }
+    html[dir="ltr"] #uploadOptionsContainer button { text-align: left; }
+    #uploadOptionsContainer button:hover { background-color: var(--primary-hover-color); color: var(--text-on-primary); border-color: var(--primary-color); }
+    #suggestionsContainer { display: none; flex-direction: row; gap: 8px; padding-bottom: 8px; max-width: 800px; margin: 0 auto; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+    #suggestionsContainer::-webkit-scrollbar { display: none; }
+    .suggestion-btn { background-color: var(--bg-surface-raised); border: 1px solid var(--border-color); color: var(--text-secondary); padding: 6px 12px; font-size: 0.85rem; border-radius: var(--border-radius-xl); cursor: pointer; transition: all 0.2s ease; flex-shrink: 0; }
+    .suggestion-btn:hover { background-color: var(--bg-input); border-color: var(--secondary-color); color: var(--text-primary); transform: translateY(-2px); }
+    .fullscreen-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 1001; flex-direction: column; justify-content: center; align-items: center; }
+    #cameraView, #previewCanvas { width: 100%; height: 100%; object-fit: cover; }
+    .camera-controls { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; align-items: center; z-index: 1002; }
+    .shutter-btn { width: 70px; height: 70px; border-radius: 50%; background-color: #fff; border: 4px solid #000; cursor: pointer; }
+    .camera-action-btn { background: rgba(0,0,0,0.5); color: #fff; border: none; padding: 15px 25px; border-radius: var(--border-radius-md); font-size: 1rem; cursor: pointer; }
+    .shutter-flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: white; opacity: 0; animation: flash 0.5s ease; pointer-events: none; z-index: 1003; }
+    @keyframes flash { from { opacity: 0.7; } to { opacity: 0; } }
+    .share-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+    .share-modal-content { max-width: 450px; width: 90%; background: #1c1c1c; padding: 30px; border: 1px solid var(--border-color-light); border-radius: var(--border-radius-lg); text-align: center; display: flex; flex-direction: column; align-items: center; position: relative; box-shadow: var(--shadow-lg); }
+    .share-modal-content h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--text-primary); }
+    .share-modal-content > p { font-size: 1rem; color: var(--text-secondary); margin-bottom: 25px; line-height: 1.6; }
+    .share-link-container { display: flex; margin-bottom: 20px; width: 100%; }
+    .share-link-container input { flex-grow: 1; border: 1px solid var(--border-color); background-color: var(--bg-input); color: var(--text-primary); padding: 12px 15px; border-radius: 0 8px 8px 0; font-size: 0.95rem; outline: none; }
+    .share-link-container button { border: 1px solid var(--primary-color); background-color: var(--primary-color); color: var(--text-on-primary); padding: 12px 18px; border-radius: 8px 0 0 8px; cursor: pointer; font-weight: 700; transition: background-color 0.2s; }
+    .share-link-container button:hover { background-color: var(--primary-hover-color); }
+    .share-divider { width: 80%; height: 1px; background: var(--border-color); margin: 25px auto; border: none; }
+    .social-share-buttons { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
+    .social-share-buttons .share-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--bg-surface-raised); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; text-decoration: none; transition: all 0.3s ease; }
+    .social-share-buttons .share-icon:hover { color: #fff; transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .share-icon.whatsapp:hover { background-color: #25D366; } .share-icon.twitter:hover { background-color: #1DA1F2; } .share-icon.telegram:hover { background-color: #0088cc; } .share-icon.facebook:hover { background-color: #1877F2; }
+    .qr-code-container { margin-top: 15px; }
+    .qr-code-container img { background: #fff; padding: 8px; border-radius: 8px; border: 1px solid var(--border-color); }
+    .qr-code-container p { color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; }
+    .close-share-modal { position: absolute; top: 15px; left: 15px; font-size: 1.8rem; color: var(--text-secondary); cursor: pointer; transition: all 0.2s ease; }
+    .close-share-modal:hover { color: var(--text-primary); transform: rotate(90deg); }
+    .history-sidebar { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background-color: var(--bg-surface); border-left: 1px solid var(--border-color); z-index: 1001; transition: right 0.3s ease-in-out; display: flex; flex-direction: column; box-shadow: var(--shadow-lg); }
+    html[dir="ltr"] .history-sidebar { right: auto; left: -300px; border-left: none; border-right: 1px solid var(--border-color); transition: left 0.3s ease-in-out; }
+    .history-sidebar.open { right: 0; }
+    html[dir="ltr"] .history-sidebar.open { left: 0; }
+    .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 1000; backdrop-filter: blur(2px); }
+    .sidebar-overlay.open { display: block; }
+    .history-header { padding: 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+    .history-header h3 { font-size: 1.1rem; color: var(--text-primary); }
+    #closeHistoryBtn { background: none; border: none; font-size: 1.8rem; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; }
+    #closeHistoryBtn:hover { color: var(--text-primary); transform: rotate(90deg); }
+    .new-chat-btn { display: flex; align-items: center; gap: 10px; width: calc(100% - 2rem); margin: 1rem; padding: 0.8rem; background-color: var(--bg-input); border: 1px solid var(--border-color-light); border-radius: var(--border-radius-md); color: var(--text-primary); cursor: pointer; transition: all 0.2s; font-size: 0.95rem; }
+    .new-chat-btn:hover { background-color: var(--primary-hover-color); color: var(--text-on-primary); border-color: var(--primary-color); }
+    #historyList { list-style: none; flex-grow: 1; overflow-y: auto; padding: 0 1rem; }
+    #historyList li { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0.6rem; border-radius: var(--border-radius-sm); margin-bottom: 0.5rem; cursor: pointer; transition: background-color 0.2s; background-color: var(--bg-surface-raised); border: 1px solid transparent; }
+    #historyList li:hover { background-color: var(--bg-input); }
+    #historyList li.active { background-color: var(--bg-input); border-color: var(--secondary-color); }
+    .history-item-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; font-size: 0.9rem; }
+    .delete-history-item-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 0 5px; font-size: 0.9rem; opacity: 0.5; transition: all 0.2s; }
+    #historyList li:hover .delete-history-item-btn { opacity: 1; }
+    .delete-history-item-btn:hover { color: var(--error-color); transform: scale(1.2); }
+    .fullscreen-image-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(5px); }
+    #fullscreenImageView { max-width: 90%; max-height: 85%; object-fit: contain; border-radius: var(--border-radius-md); box-shadow: 0 0 40px rgba(0,0,0,0.5); }
+    .close-overlay-btn { position: absolute; top: 20px; right: 30px; font-size: 2.5rem; font-weight: bold; color: #fff; cursor: pointer; transition: transform 0.2s ease; }
+    .close-overlay-btn:hover { transform: scale(1.2); }
+    @media (max-width: 480px) { 
+      .header h1 { font-size: 1.1rem; } .message { max-width: 95%; } .chat-input-wrapper textarea { padding: 0.8rem 0; margin: 0 2px; } .chat-input-main .chat-input-btn { width: 40px; height: 40px; font-size: 1rem; }
+      .suggestion-btn { padding: 10px; font-size: 0.85rem; }
+      .subject-item-btn { padding: 12px 15px; font-size: 0.9rem; gap: 6px;} 
+      .subject-item-btn i { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="space-background" class="space-background">
+        <img src="https://i.postimg.cc/Y9qbgjmX/moon-PNG20.png" alt="Moon" class="moon" id="moon-img">
+        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+    </div>
+    
+    <header class="header" dir="rtl">
+      <div class="header-group">
+        <button id="generalChatBtn" class="header-btn" style="display: none;"></button>
+        <div id="languageSelector">
+          <button id="languageBtn" class="header-btn"><i class="fas fa-globe"></i></button>
+          <div id="languageDropdown" class="dropdown-menu">
+            <button data-lang="ar"></button> <button data-lang="en"></button> <button data-lang="fr"></button> <button data-lang="es"></button> <button data-lang="zh"></button>
+          </div>
+        </div>
+      </div>
+      <div class="header-group">
+        <img src="https://i.postimg.cc/15L2K4wT/1000137153.png" alt="Astronaut Icon" class="header-astronaut-icon">
+        <h1 id="botName">Saif AI</h1>
+      </div>
+      <div id="headerIcons" class="header-group">
+        <i class="fas fa-bars header-icon history-btn" id="historyBtn"></i>
+        <div id="settingsSelector">
+            <i class="fas fa-cog header-icon settings-btn" id="settingsBtn"></i>
+            <div id="settingsDropdown" class="dropdown-menu">
+                <button id="enterSubjectsBtn"><i class="fas fa-book"></i> <span id="enterSubjectsBtnText"></span></button>
+                <button id="modelSelectionBtn"><i class="fa-solid fa-brain"></i> <span id="modelSelectionBtnText"></span></button>
+                <button id="deleteCurrentChatBtn" class="danger"><i class="fas fa-trash-can"></i> <span id="deleteCurrentChatBtnText"></span></button>
+            </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="chat-wrapper" id="chatWrapper"> 
+        <div id="welcomeAnimationContainer">
+            <div class="astronaut-animation-wrapper">
+                <img src="https://i.postimg.cc/15L2K4wT/1000137153.png" alt="Saif AI" class="welcome-astronaut"/>
+            </div>
+        </div>
+        <div id="chatContainer" class="chat-container"></div>
+        <div class="chat-input-area"> 
+            <div id="suggestionsContainer"></div>
+            <div class="voice-indicator" id="voiceIndicator"><i class="fas fa-microphone-lines"></i><span id="listeningText"></span></div>
+            <div class="chat-input-wrapper">
+              <div id="imagePreviewContainer"></div>
+              <div class="chat-input-main">
+                <button class="chat-input-btn" id="sendOrVoiceBtn"></button>
+                <textarea id="userInput" rows="1" dir="auto"></textarea>
+                <button class="chat-input-btn" id="toggleUploadBtn"><i class="fas fa-paperclip"></i></button>
+              </div>
+              <div class="upload-options-container" id="uploadOptionsContainer">
+                <button id="uploadFromGalleryBtn"><i class="fas fa-images"></i> <span></span></button>
+                <button id="useCameraBtn"><i class="fas fa-camera"></i> <span></span></button>
+              </div>
+              <input id="imageUpload" type="file" accept="image/*" style="display: none;" />
+            </div>
+        </div>
+    </div>
+
+    <div id="subjectsViewContainer"> 
+        <div class="subjects-view-header">
+            <h2 id="subjectsViewTitle"></h2>
+            <button id="backToChatBtn" class="back-to-chat-btn"><i class="fas fa-arrow-left"></i> <span id="backToChatText"></span></button>
+        </div>
+        <div id="subjectListContainer"></div>
+    </div>
+  </div>
+  
+  <div id="historySidebar" class="history-sidebar">
+    <div class="history-header"><h3 id="historyTitle"></h3><button id="closeHistoryBtn">×</button></div>
+    <button id="newChatBtn" class="new-chat-btn"><i class="fas fa-plus"></i> <span id="newChatText"></span></button>
+    <ul id="historyList"></ul>
+  </div>
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+  <div class="fullscreen-overlay" id="cameraOverlay">
+    <video id="cameraView" autoplay playsinline></video>
+    <div class="camera-controls">
+        <button id="cancelCameraBtn" class="camera-action-btn"></button>
+        <button id="captureBtn" class="shutter-btn"></button>
+    </div>
+    <div class="shutter-flash"></div>
+  </div>
+
+  <div class="fullscreen-overlay" id="previewOverlay">
+      <canvas id="previewCanvas"></canvas>
+      <div id="loader" style="display: none; color: white;"></div>
+      <div class="camera-controls">
+          <button id="retakeBtn" class="camera-action-btn"></button>
+          <button id="usePhotoBtn" class="camera-action-btn"></button>
+      </div>
+  </div>
+
+  <div id="shareModal" class="share-modal">
+    <div class="share-modal-content">
+      <span class="close-share-modal" id="closeShareModal">×</span><h2 id="shareModalTitle"></h2><p id="shareModalDesc"></p>
+      <div class="share-link-container"><button id="copyLinkBtn"><i class="fas fa-copy"></i> <span id="copyBtnText"></span></button><input type="text" value="https://tinyurl.com/saif-ai" id="shareLinkInput" readonly></div>
+      <hr class="share-divider">
+      <div class="social-share-buttons">
+          <a href="#" target="_blank" class="share-icon whatsapp" id="whatsapp-share"><i class="fab fa-whatsapp"></i></a><a href="#" target="_blank" class="share-icon twitter" id="twitter-share"><i class="fab fa-twitter"></i></a><a href="#" target="_blank" class="share-icon telegram" id="telegram-share"><i class="fab fa-telegram-plane"></i></a><a href="#" target="_blank" class="share-icon facebook" id="facebook-share"><i class="fab fa-facebook-f"></i></a>
+      </div>
+      <div class="qr-code-container"><img id="qr-code-img" src="" alt="QR Code" width="140" height="140"><p id="qrCodeText"></p></div>
+    </div>
+  </div>
+
+  <div id="imageOverlay" class="fullscreen-image-overlay">
+    <span id="closeOverlayBtn" class="close-overlay-btn">×</span>
+    <img id="fullscreenImageView" src="" alt="Full screen image view">
+  </div>
+
+
+  <script>
+    const geminiApiKeys = [
+        "AIzaSyBOUKBYucfJxt5eU7xZWzOn9orrFFBXfQQ",
+        "AIzaSyDmLUmqwHqsSezgHtedztYDTxf-nty1oiU",
+        "AIzaSyCHwfQ9bemCQlM4N4vrAWrO9B1hOCr986w",
+        "AIzaSyC7drnLF18tizGe8kEpgX4vURO97d7crHI"
+    ];
+
+    const chatWrapper = document.getElementById("chatWrapper"); const chatContainer = document.getElementById("chatContainer"); const userInput = document.getElementById("userInput"); const botNameElement = document.getElementById("botName"); const imageUploadInput = document.getElementById("imageUpload"); const toggleUploadBtn = document.getElementById("toggleUploadBtn"); const uploadOptionsContainer = document.getElementById("uploadOptionsContainer"); const voiceIndicator = document.getElementById('voiceIndicator'); const subjectsViewContainer = document.getElementById('subjectsViewContainer'); const subjectListContainer = document.getElementById('subjectListContainer'); const backToChatBtn = document.getElementById('backToChatBtn'); const cameraOverlay = document.getElementById('cameraOverlay'); const previewOverlay = document.getElementById('previewOverlay'); const cameraView = document.getElementById('cameraView'); const previewCanvas = document.getElementById('previewCanvas'); const captureBtn = document.getElementById('captureBtn'); const cancelCameraBtn = document.getElementById('cancelCameraBtn'); const usePhotoBtn = document.getElementById('usePhotoBtn'); const retakeBtn = document.getElementById('retakeBtn'); const loader = document.getElementById('loader'); const imagePreviewContainer = document.getElementById('imagePreviewContainer'); let cameraStream = null; const generalChatBtn = document.getElementById('generalChatBtn'); const shareModal = document.getElementById('shareModal'); const closeShareModalBtn = document.getElementById('closeShareModal'); const copyLinkBtn = document.getElementById('copyLinkBtn'); const shareLinkInput = document.getElementById('shareLinkInput'); const sendOrVoiceBtn = document.getElementById('sendOrVoiceBtn'); const languageBtn = document.getElementById('languageBtn'); const languageDropdown = document.getElementById('languageDropdown'); const suggestionsContainer = document.getElementById('suggestionsContainer'); const settingsBtn = document.getElementById('settingsBtn'); const settingsDropdown = document.getElementById('settingsDropdown'); const enterSubjectsBtn = document.getElementById('enterSubjectsBtn'); const deleteCurrentChatBtn = document.getElementById('deleteCurrentChatBtn'); const historyBtn = document.getElementById('historyBtn'); const historySidebar = document.getElementById('historySidebar'); const sidebarOverlay = document.getElementById('sidebar-overlay'); const closeHistoryBtn = document.getElementById('closeHistoryBtn'); const newChatBtn = document.getElementById('newChatBtn'); const historyList = document.getElementById('historyList'); const welcomeAnimation = document.getElementById('welcomeAnimationContainer');
+    const botName = "Saif AI"; const localStorageKeyAllChats = "saifAiAllChatSessions_v3"; const localStorageKeyLastSession = "saifAiLastSession_v3"; const localStorageKeyLanguage = "saifAiLanguage_v1";
+    const localStorageKeyUploadTracker = "saifAiUploadTracker_v1";
+    const localStorageKeyLastVisitDate = "saifAiLastVisitDate_v1";
+    const localStorageKeyModel = "saifAiModel_v1";
+    let allChatSessions = {}; let messages = []; let attachedFiles = []; let currentSubject = "general"; let currentChatId = null; let currentLanguage = "ar";
+    let currentModel = "gemini-1.5-flash-latest";
+
+    const subjects = [ { key: "physics", name: { ar: "فيزياء", en: "Physics", fr: "Physique", es: "Física", zh: "物理" }, icon: "fas fa-atom" }, { key: "chemistry", name: { ar: "كيمياء", en: "Chemistry", fr: "Chimie", es: "Química", zh: "化学" }, icon: "fas fa-flask" }, { key: "biology", name: { ar: "أحياء", en: "Biology", fr: "Biologie", es: "Biología", zh: "生物学" }, icon: "fas fa-dna" }, { key: "science", name: { ar: "علوم", en: "Science", fr: "Sciences", es: "Ciencia", zh: "科学" }, icon: "fas fa-microscope" }, { key: "arabic", name: { ar: "لغة عربية", en: "Arabic", fr: "Arabe", es: "Árabe", zh: "阿拉伯语" }, icon: "fas fa-pen-nib" }, { key: "philosophy", name: { ar: "فلسفة", en: "Philosophy", fr: "Philosophie", es: "Filosofía", zh: "哲学" }, icon: "fas fa-brain" }, { key: "english", name: { ar: "لغة إنجليزية", en: "English", fr: "Anglais", es: "Inglés", zh: "英语" }, icon: "fas fa-language" }, { key: "math", name: { ar: "رياضيات", en: "Math", fr: "Maths", es: "Matemáticas", zh: "数学" }, icon: "fas fa-calculator" }, { key: "religion", name: { ar: "تربية دينية", en: "Religion", fr: "Religion", es: "Religión", zh: "宗教教育" }, icon: "fas fa-mosque" } ];
+    let recognition; let isListening = false; let deferredPrompt; let speechEndTimeout;
+    const predefinedSuggestions = [ {ar:"اشرح لي مفهوم الثقب الأسود ببساطة",en:"Explain the concept of a black hole simply",fr:"Expliquez simplement le concept d'un trou noir",es:"Explica de forma sencilla el concepto de agujero negro",zh:"简单解释一下黑洞的概念"}, {ar:"ما هي أفضل طريقة لتعلم لغة جديدة؟",en:"What is the best way to learn a new language?",fr:"Quelle est la meilleure façon d'apprendre une nouvelle langue ?",es:"¿Cuál es la mejor manera de aprender un nuevo idioma?",zh:"学习一门新语言的最好方法是什么？"}, {ar:"اكتب قصة قصيرة عن مستكشف فضاء",en:"Write a short story about a space explorer",fr:"Écrivez une nouvelle sur un explorateur de l'espace",es:"Escribe una historia corta sobre un explorador espacial",zh:"写一个关于太空探险家的短篇故事"}, {ar:"ما هي عاصمة أستراليا؟",en:"What is the capital of Australia?",fr:"Quelle est la capitale de l'Australie ?",es:"¿Cuál es la capital de Australia?",zh:"澳大利亚的首都是哪里？"}, {ar:"لخص لي كتاب الأب الغني والأب الفقير",en:"Summarize the book 'Rich Dad Poor Dad'",fr:"Résumez le livre 'Père riche, père pauvre'",es:"Resume el libro 'Padre Rico, Padre Pobre'",zh:"总结《富爸爸穷爸爸》这本书"}, {ar:"كيف تعمل محركات البحث مثل جوجل؟",en:"How do search engines like Google work?",fr:"Comment fonctionnent les moteurs de recherche comme Google ?",es:"¿Cómo funcionan los motores de búsqueda como Google?",zh:"像谷歌这样的搜索引擎是如何工作的？"}, {ar:"ما هي فوائد رياضة التأمل؟",en:"What are the benefits of meditation?",fr:"Quels sont les bienfaits de la méditation ?",es:"¿Cuáles son los beneficios de la meditación?",zh:"冥想有什么好处？"}, {ar:"اقترح 5 أفكار لمشاريع برمجية صغيرة",en:"Suggest 5 ideas for small programming projects",fr:"Suggérez 5 idées de petits projets de programmation",es:"Sugiere 5 ideas para pequeños proyectos de programación",zh:"为小型编程项目建议5个想法"}, {ar:"ما هو الفرق بين الذكاء الاصطناعي وتعلم الآلة؟",en:"What is the difference between AI and Machine Learning?",fr:"Quelle est la différence entre l'IA et l'apprentissage automatique ?",es:"¿Cuál es la diferencia entre la IA y el Aprendizaje Automático?",zh:"人工智能和机器学习有什么区别？"}, {ar:"اكتب لي قصيدة عن جمال الطبيعة",en:"Write me a poem about the beauty of nature",fr:"Écris-moi un poème sur la beauté de la nature",es:"Escríbeme un poema sobre la belleza de la naturaleza",zh:"为我写一首关于自然之美的诗"}, {ar:"كيف يمكنني حماية خصوصيتي على الإنترنت؟",en:"How can I protect my privacy online?",fr:"Comment puis-je protéger ma vie privée en ligne ?",es:"¿Cómo puedo proteger mi privacidad en línea?",zh:"我如何在线保护我的隐私？"}, {ar:"ما هي أبرز أحداث القرن العشرين؟",en:"What are the main events of the 20th century?",fr:"Quels sont les principaux événements du 20e siècle ?",es:"¿Cuáles son los principaux acontecimientos del siglo XX?",zh:"20世纪的主要事件有哪些？"}, {ar:"اشرح نظرية النسبية لأينشطاين",en:"Explain Einstein's theory of relativity",fr:"Expliquez la théorie de la relativité d'Einstein",es:"Explica la teoría de la relatividad de Einstein",zh:"解释爱因斯坦的相对论"}, {ar:"ما هي أغرب معلومة تعرفها؟",en:"What is the weirdest fact you know?",fr:"Quel est le fait le plus étrange que vous connaissiez ?",es:"¿Cuál es el dato más extraño que conoces?",zh:"你知道的最奇怪的事实是什么？"}, {ar:"اقترح خطة لرحلة سياحية إلى اليابان لمدة أسبوع",en:"Suggest a one-week tourist trip plan to Japan",fr:"Suggérez un plan de voyage touristique d'une semaine au Japon",es:"Sugiere un plan de viaje turístico de una semana a Japón",zh:"建议一个为期一周的日本旅游计划"}, {ar:"كيف أبدأ في مجال الاستثمار؟",en:"How do I start investing?",fr:"Comment commencer à investir ?",es:"¿Cómo empiezo a invertir?",zh:"我该如何开始投资？"}, {ar:"اكتب نصًا إعلانيًا لمنتج خيالي",en:"Write an advertisement text for a fictional product",fr:"Rédigez un texte publicitaire pour un produit fictif",es:"Escribe un texto publicitario para un producto ficticio",zh:"为虚构产品撰写广告文案"}, {ar:"ما هي أهمية الحفاظ على البيئة؟",en:"What is the importance of environmental conservation?",fr:"Quelle est l'importance de la conservation de l'environnement ?",es:"¿Cuál es la importancia de la conservación del medio ambiente?",zh:"环境保护的重要性是什么？"}, {ar:"لخص فيلم 'Inception'",en:"Summarize the movie 'Inception'",fr:"Résumez le film 'Inception'",es:"Resume la película 'Inception'",zh:"总结电影《盗梦空间》"}, {ar:"ما هي الحضارات القديمة التي أثرت في العالم؟",en:"What ancient civilizations influenced the world?",fr:"Quelles civilisations anciennes ont influencé le monde ?",es:"¿Qué civilizaciones antiguas influyeron en el mundo?",zh:"哪些古代文明影响了世界？"}, {ar:"كيف يعمل نظام تحديد المواقع العالمي (GPS)؟",en:"How does the GPS system work?",fr:"Comment fonctionne le système GPS ?",es:"¿Cómo funciona el sistema GPS?",zh:"GPS系统是如何工作的？"}, {ar:"ما هي النصائح لزيادة الإنتاجية في العمل؟",en:"What are some tips for increasing productivity at work?",fr:"Quels sont les conseils pour augmenter la productivité au travail ?",es:"¿Cuáles son algunos consejos para aumentar la productividad en el trabajo?",zh:"提高工作效率有什么技巧？"}, {ar:"اكتب حوارًا فلسفيًا بين شخصين",en:"Write a philosophical dialogue between two people",fr:"Écrivez un dialogue philosophique entre deux personnes",es:"Escribe un diálogo filosófico entre dos personas",zh:"写一段两人之间的哲学对话"}, {ar:"ما هي أفضل الكتب التي قرأتها؟",en:"What are the best books you have read?",fr:"Quels sont les meilleurs livres que vous avez lus ?",es:"¿Cuáles son los mejores libros que has leído?",zh:"你读过的最好的书是哪些？"}, {ar:"كيف يمكن للذكاء الاصطناعي أن يغير مستقبلنا؟",en:"How can AI change our future?",fr:"Comment l'IA peut-elle changer notre avenir ?",es:"¿Cómo puede la IA cambiar nuestro futuro?",zh:"人工智能如何改变我们的未来？"}, {ar:"ما هي عملية البناء الضوئي؟",en:"What is the process of photosynthesis?",fr:"Quel est le processus de la photosynthèse ?",es:"¿Qué es el proceso de la fotosíntesis?",zh:"什么是光合作用的过程？"}, {ar:"لخص قصة أحد الأنبياء",en:"Summarize the story of one of the prophets",fr:"Résumez l'histoire d'un des prophètes",es:"Resume la historia de uno de los profetas",zh:"总结一位先知的故事"}, {ar:"ما هي المهارات المطلوبة في سوق العمل اليوم؟",en:"What skills are in demand in today's job market?",fr:"Quelles sont les compétences recherchées sur le marché du travail actuel ?",es:"¿Qué habilidades se demandan en el mercado laboral actual?",zh:"当今就业市场需要哪些技能？"} ];
+    const mainContainer = document.querySelector('.container');
+    const spaceBackground = document.getElementById('space-background');
+    function registerServiceWorker() { if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js').catch(err => console.error('Service Worker registration failed:', err)); } }
+    function initSpeechRecognition() { if (recognition) { recognition.abort(); } const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition; if (SpeechRecognition) { const langMap = { ar: 'ar-SA', en: 'en-US', fr: 'fr-FR', es: 'es-ES', zh: 'zh-CN' }; recognition = new SpeechRecognition(); recognition.continuous = false; recognition.interimResults = true; recognition.lang = langMap[currentLanguage]; recognition.onstart = () => { isListening = true; sendOrVoiceBtn.classList.add('recording'); voiceIndicator.classList.add('active'); }; recognition.onresult = (event) => { let transcript = Array.from(event.results).map(result => result[0].transcript).join(''); userInput.value = transcript; if(event.results[0].isFinal) { autoResizeTextarea(); updateSendOrVoiceButton(); } }; recognition.onerror = (event) => { console.error('Speech recognition error', event.error); stopListening(); }; recognition.onend = () => { stopListening(); }; } else { sendOrVoiceBtn.style.display = 'none'; } }
+    function toggleListening() { if (!recognition) return; if (isListening) { recognition.stop(); } else { try { userInput.value = ""; autoResizeTextarea(); recognition.start(); } catch (e) { stopListening(); } } }
+    function stopListening() { if(isListening) { isListening = false; sendOrVoiceBtn.classList.remove('recording'); voiceIndicator.classList.remove('active'); } }
+    function speakMessageText(text, buttonElement) { 
+      if (speechSynthesis.speaking) { 
+        speechSynthesis.cancel();
+        return;
+      } 
+      const utterance = new SpeechSynthesisUtterance(text); 
+      const langMap = { ar: 'ar-SA', en: 'en-US', fr: 'fr-FR', es: 'es-ES', zh: 'zh-CN' }; 
+      utterance.lang = langMap[currentLanguage]; 
+      
+      utterance.onstart = () => {
+        document.querySelectorAll('.message-actions button.speaking').forEach(btn => {
+          btn.classList.remove('speaking');
+          btn.querySelector('i').className = 'fas fa-volume-high';
+        });
+        buttonElement.classList.add('speaking');
+        buttonElement.querySelector('i').className = 'fas fa-wave-square';
+      };
+      utterance.onend = () => {
+        buttonElement.classList.remove('speaking');
+        buttonElement.querySelector('i').className = 'fas fa-volume-high';
+      };
+      utterance.onerror = () => {
+        buttonElement.classList.remove('speaking');
+        buttonElement.querySelector('i').className = 'fas fa-volume-high';
+      };
+      
+      speechSynthesis.speak(utterance); 
+    }
+    
+    function randomizeMoonPosition() {
+        const moon = document.getElementById('moon-img');
+        if (!moon) return;
+        const top = Math.random() * 15 + 5;
+        const right = Math.random() * 25 + 5;
+        moon.style.top = `${top}%`;
+        moon.style.right = `${right}%`;
+    }
+
+    function initializeApp() { 
+        registerServiceWorker(); 
+        const savedLang = localStorage.getItem(localStorageKeyLanguage) || 'ar'; 
+        const savedModel = localStorage.getItem(localStorageKeyModel) || 'gemini-1.5-flash-latest';
+        currentModel = savedModel;
+        switchLanguage(savedLang); 
+        loadAllChatSessions(); 
+        randomizeMoonPosition();
+        const qrCodeImg = document.getElementById('qr-code-img'); const whatsappShare = document.getElementById('whatsapp-share'); const twitterShare = document.getElementById('twitter-share'); const telegramShare = document.getElementById('telegram-share'); const facebookShare = document.getElementById('facebook-share'); const shareBtn = document.getElementById('shareBtn'); if(shareBtn) { shareBtn.addEventListener('click', () => { const shareUrl = shareLinkInput.value; const shareText = translations[currentLanguage].shareText; qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(shareUrl)}&bgcolor=1c1c1c&color=ffffff&qzone=1`; whatsappShare.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + " " + shareUrl)}`; twitterShare.href = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`; telegramShare.href = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`; facebookShare.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`; shareModal.style.display = 'flex'; }); } closeShareModalBtn.addEventListener('click', () => { shareModal.style.display = 'none'; }); copyLinkBtn.addEventListener('click', copyShareLink); toggleUploadBtn.addEventListener('click', (e) => { e.stopPropagation(); uploadOptionsContainer.classList.toggle('active'); }); document.getElementById('uploadFromGalleryBtn').onclick = () => triggerImageUpload(); document.getElementById('useCameraBtn').onclick = () => openCamera(); captureBtn.addEventListener('click', captureImage); retakeBtn.addEventListener('click', () => { previewOverlay.style.display = 'none'; cameraOverlay.style.display = 'flex'; }); cancelCameraBtn.addEventListener('click', closeCamera); usePhotoBtn.addEventListener('click', handleCameraPhotoSubmission); enterSubjectsBtn.addEventListener('click', openSubjectsView); backToChatBtn.addEventListener('click', closeSubjectsView); generalChatBtn.addEventListener('click', switchToGeneralMode); userInput.addEventListener("keydown", (e) => { if(e.key==="Enter"&&!e.shiftKey) { e.preventDefault(); sendMessage();}}); userInput.addEventListener("input", () => { autoResizeTextarea(); updateSendOrVoiceButton(); updateInitialViewState(); }); languageBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleDropdown(languageDropdown); }); settingsBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleDropdown(settingsDropdown); }); document.getElementById('modelSelectionBtn').addEventListener('click', toggleModel); document.addEventListener('click', () => { uploadOptionsContainer.classList.remove('active'); languageDropdown.style.display = 'none'; settingsDropdown.style.display = 'none'; }); document.querySelectorAll('#languageDropdown button').forEach(button => { button.addEventListener('click', (e) => { switchLanguage(e.currentTarget.dataset.lang); }); }); deleteCurrentChatBtn.addEventListener('click', deleteCurrentChat); historyBtn.addEventListener('click', openHistorySidebar); closeHistoryBtn.addEventListener('click', closeHistorySidebar); sidebarOverlay.addEventListener('click', closeHistorySidebar); newChatBtn.addEventListener('click', () => { loadChat(currentSubject, null); closeHistorySidebar(); }); imageUploadInput.addEventListener('change', handleFileSelect); window.addEventListener('appinstalled', () => { deferredPrompt = null; }); window.addEventListener('click', (event) => { if (event.target == shareModal) shareModal.style.display = 'none'; });
+        const imageOverlay = document.getElementById('imageOverlay');
+        document.getElementById('closeOverlayBtn').onclick = () => { imageOverlay.style.display = 'none'; };
+        imageOverlay.onclick = (e) => { if (e.target.id === 'imageOverlay') { imageOverlay.style.display = 'none'; } };
+    }
+    function toggleDropdown(menu) { const isVisible = menu.style.display === 'block'; languageDropdown.style.display = 'none'; settingsDropdown.style.display = 'none'; if (!isVisible) { menu.style.display = 'block'; } }
+    function copyShareLink() { shareLinkInput.select(); navigator.clipboard.writeText(shareLinkInput.value).then(() => { const originalText = document.getElementById('copyBtnText').textContent; document.getElementById('copyBtnText').textContent = translations[currentLanguage].copied; copyLinkBtn.querySelector('i').className = "fas fa-check"; setTimeout(() => { document.getElementById('copyBtnText').textContent = originalText; copyLinkBtn.querySelector('i').className = "fas fa-copy"; }, 2000); }); }
+    function updateSendOrVoiceButton() { const hasText = userInput.value.trim().length > 0 || attachedFiles.length > 0; const t = translations[currentLanguage]; if (hasText) { sendOrVoiceBtn.innerHTML = '<i class="fas fa-paper-plane"></i>'; sendOrVoiceBtn.title = t.send; sendOrVoiceBtn.onclick = sendMessage; } else { sendOrVoiceBtn.innerHTML = '<i class="fas fa-microphone"></i>'; sendOrVoiceBtn.title = t.speak; sendOrVoiceBtn.onclick = toggleListening; } }
+    function openSubjectsView() { chatWrapper.style.display = 'none'; subjectsViewContainer.style.display = 'flex'; settingsDropdown.style.display = 'none'; }
+    function closeSubjectsView() { subjectsViewContainer.style.display = 'none'; chatWrapper.style.display = 'flex'; }
+    function getTranslatedSubjectName(subjectKey) { if (subjectKey === "general") return translations[currentLanguage].general; const subject = subjects.find(s => s.key === subjectKey); return subject ? subject.name[currentLanguage] : subjectKey; }
+    function getBotDisplayName() { const subjectName = getTranslatedSubjectName(currentSubject); return currentSubject === "general" ? botName : `${botName} (${subjectName})`; }
+    function updateSubjectUI() { botNameElement.textContent = getBotDisplayName(); const t = translations[currentLanguage]; generalChatBtn.style.display = currentSubject === "general" ? 'none' : 'inline-block'; generalChatBtn.textContent = t.general; }
+    function populateSubjectListInView() { subjectListContainer.innerHTML = ''; subjects.forEach(subject => { const btn = document.createElement('button'); btn.className = 'subject-item-btn'; btn.innerHTML = `<i class="${subject.icon}"></i><span>${subject.name[currentLanguage]}</span>`; btn.onclick = () => selectSubject(subject.key); subjectListContainer.appendChild(btn); }); }
+    function selectSubject(subjectKey) { if (currentSubject === subjectKey) { closeSubjectsView(); return; } switchSubject(subjectKey); }
+    function switchToGeneralMode() { if (currentSubject === "general") { return; } switchSubject("general"); }
+    function switchSubject(newSubject) { currentSubject = newSubject; const sessionsForNewSubject = allChatSessions[newSubject] || []; const lastChatInNewSubject = sessionsForNewSubject.length > 0 ? sessionsForNewSubject[0].id : null; loadChat(newSubject, lastChatInNewSubject); updateSubjectUI(); closeSubjectsView(); }
+    
+    function loadAllChatSessions() {
+        try {
+            const stored = localStorage.getItem(localStorageKeyAllChats);
+            allChatSessions = stored ? JSON.parse(stored) : {};
+        } catch (e) {
+            allChatSessions = {};
+        }
+        subjects.forEach(s => { if (!allChatSessions[s.key]) allChatSessions[s.key] = []; });
+        if (!allChatSessions.general) allChatSessions.general = [];
+
+        const lastVisitDate = localStorage.getItem(localStorageKeyLastVisitDate);
+        const currentDate = new Date().toDateString();
+
+        if (lastVisitDate !== currentDate) {
+            loadChat('general', null);
+        } else {
+            let lastSession = { subject: 'general', id: null };
+            try {
+                const storedLast = localStorage.getItem(localStorageKeyLastSession);
+                if (storedLast) lastSession = JSON.parse(storedLast);
+            } catch (e) {}
+            
+            const lastSessionExists = allChatSessions[lastSession.subject]?.some(s => s.id === lastSession.id);
+            if (lastSessionExists) {
+                loadChat(lastSession.subject, lastSession.id);
+            } else {
+                const sessionsForSubject = allChatSessions[lastSession.subject] || [];
+                const latestChatId = sessionsForSubject.length > 0 ? sessionsForSubject[0].id : null;
+                loadChat(lastSession.subject, latestChatId);
+            }
+        }
+    }
+
+    function saveAllChatSessionsToLocalStorage() {
+        if (currentChatId && allChatSessions[currentSubject]) {
+            const session = allChatSessions[currentSubject].find(s => s.id === currentChatId);
+            if (session) {
+                session.messages = messages;
+            }
+        }
+        localStorage.setItem(localStorageKeyAllChats, JSON.stringify(allChatSessions));
+        localStorage.setItem(localStorageKeyLastSession, JSON.stringify({ subject: currentSubject, id: currentChatId }));
+        localStorage.setItem(localStorageKeyLastVisitDate, new Date().toDateString());
+    }
+    
+    function loadChat(subject, chatId) { currentSubject = subject; currentChatId = chatId; if (chatId === null) { messages = []; addWelcomeMessage(); } else { const session = allChatSessions[subject]?.find(s => s.id === chatId); if (session) { messages = session.messages; } else { messages = []; addWelcomeMessage(); currentChatId = null; } } updateSubjectUI(); refreshChat(); }
+    function addWelcomeMessage() { const welcomeMsgText = getWelcomeMessageText(); if (messages.length === 0 || !messages.some(m => m.isInitialWelcome)) { messages.unshift({ sender: "bot", text: welcomeMsgText, images: [], isInitialWelcome: true }); } }
+    function addMessage(sender, text, images = [], isSystemMessage = false) { if (currentChatId === null && sender === 'user') { const newId = Date.now(); const newSession = { id: newId, timestamp: newId, messages: [] }; if (!allChatSessions[currentSubject]) { allChatSessions[currentSubject] = []; } allChatSessions[currentSubject].unshift(newSession); currentChatId = newId; } messages.push({ sender, text, images, isSystemMessage }); refreshChat(); chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' }); }
+    function typeWriterEffect(element, text) { let i = 0; element.innerHTML = ""; function type() { if (i < text.length) { element.innerHTML += text.charAt(i); i++; chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'auto' }); setTimeout(type, 15); } else { const messageElem = element.closest('.message'); if(messageElem) addBotMessageActions(messageElem, text); } } type(); }
+    function addBotMessageActions(messageElement, text) { 
+      const t = translations[currentLanguage]; 
+      const actionsDiv = document.createElement("div"); 
+      actionsDiv.className = "message-actions"; 
+      const copyButton = document.createElement('button');
+      copyButton.title = t.copy;
+      copyButton.innerHTML = `<i class="fas fa-copy"></i>`;
+      copyButton.onclick = () => { navigator.clipboard.writeText(text); };
+      
+      const speakButton = document.createElement('button');
+      speakButton.title = t.playAudio;
+      speakButton.innerHTML = `<i class="fas fa-volume-high"></i>`;
+      speakButton.onclick = () => speakMessageText(text, speakButton);
+
+      actionsDiv.appendChild(copyButton);
+      actionsDiv.appendChild(speakButton);
+      messageElement.appendChild(actionsDiv); 
+    }
+    
+    function refreshChat() {
+        chatContainer.innerHTML = "";
+        const t = translations[currentLanguage];
+        messages.forEach((msg, index) => {
+            const messageElem = document.createElement("div");
+            messageElem.className = `message ${msg.sender}`;
+            let senderName = msg.sender === "bot" ? getBotDisplayName() : t.you;
+            
+            const header = document.createElement("div");
+            header.className = "message-header";
+            const deleteButtonHTML = (msg.isInitialWelcome || msg.isSystemMessage) ? '' : `<i class="fas fa-trash-can delete-btn" title="${t.deleteMessage}"></i>`;
+            header.innerHTML = `<span>${senderName}</span>${deleteButtonHTML}`;
+            if (!msg.isInitialWelcome && !msg.isSystemMessage) {
+                header.querySelector('.delete-btn').onclick = () => deleteMessage(index);
+            }
+            
+            const contentDiv = document.createElement("div");
+            contentDiv.className = "message-content";
+            
+            if(msg.text) {
+                const formattedText = msg.text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/---/g, '<hr>');
+                contentDiv.innerHTML = formattedText;
+            }
+            
+            if (msg.images && msg.images.length > 0) {
+                const imgData = msg.images[0];
+                const imageElem = document.createElement('img');
+                imageElem.src = imgData;
+                imageElem.alt = t.sentImageAlt;
+                imageElem.className = 'sent-image';
+                imageElem.onclick = () => showFullscreenImage(imgData);
+                contentDiv.appendChild(imageElem);
+            }
+            
+            messageElem.appendChild(header);
+            messageElem.appendChild(contentDiv);
+            
+            if(msg.sender === "bot" && !msg.isInitialWelcome && !msg.isSystemMessage) {
+                addBotMessageActions(messageElem, msg.text);
+            }
+            
+            chatContainer.appendChild(messageElem);
+        });
+        updateInitialViewState();
+        saveAllChatSessionsToLocalStorage();
+        autoResizeTextarea();
+    }
+
+    function showFullscreenImage(imageData) {
+        document.getElementById('fullscreenImageView').src = imageData;
+        document.getElementById('imageOverlay').style.display = 'flex';
+    }
+
+    function deleteMessage(index) { messages.splice(index, 1); refreshChat(); }
+    function deleteCurrentChat() { settingsDropdown.style.display = 'none'; if (!currentChatId) { messages = []; addWelcomeMessage(); refreshChat(); return; } if (confirm(translations[currentLanguage].confirmDeleteCurrent)) { const sessionIndex = allChatSessions[currentSubject].findIndex(s => s.id === currentChatId); if (sessionIndex > -1) { allChatSessions[currentSubject].splice(sessionIndex, 1); } const nextSession = allChatSessions[currentSubject][0] || null; loadChat(currentSubject, nextSession ? nextSession.id : null); } }
+    
+    async function fetchGeminiResponseWithFallback(promptParts) {
+        let lastError = null;
+
+        for (const apiKey of geminiApiKeys) {
+            if (!apiKey) continue;
+
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${apiKey}`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: promptParts }] })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API key failed with status: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (responseText) {
+                    return responseText; // Success! Return the response.
+                } else {
+                    throw new Error("Received an empty response from the API.");
+                }
+
+            } catch (error) {
+                console.warn(`API key ...${apiKey.slice(-4)} failed. Trying next key.`);
+                lastError = error;
+            }
+        }
+
+        console.error("All API keys failed.", lastError);
+        throw new Error(translations[currentLanguage].errorAllKeys);
+    }
+
+    async function processQueryWithAI(promptParts) { 
+      const t = translations[currentLanguage]; 
+      updateInitialViewState(); 
+      const typingIndicatorHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`; 
+      const tempMsgId = `bot-msg-${Date.now()}`; 
+      const messageElem = document.createElement("div"); 
+      messageElem.className = `message bot`; 
+      messageElem.id = tempMsgId; 
+      messageElem.innerHTML = `<div class="message-header"><span>${getBotDisplayName()}</span></div><div class="message-content">${typingIndicatorHTML}</div>`; 
+      chatContainer.appendChild(messageElem); 
+      chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' }); 
+      try { 
+        const responseText = await fetchGeminiResponseWithFallback(promptParts); 
+        const finalMessageElement = document.getElementById(tempMsgId); 
+        if (finalMessageElement) { 
+          const contentDiv = finalMessageElement.querySelector('.message-content'); 
+          typeWriterEffect(contentDiv, responseText); 
+          messages.push({ sender: 'bot', text: responseText, images: [] }); 
+          saveAllChatSessionsToLocalStorage(); 
+        } 
+      } catch (error) { 
+        const errorElement = document.getElementById(tempMsgId); 
+        if (errorElement) { 
+          errorElement.querySelector('.message-content').innerHTML = `<span style="color: var(--error-color);">${t.errorPrefix}: ${error.message}</span>`; 
+        } 
+        messages.push({ sender: 'bot', text: `${t.errorPrefix}: ${error.message}`, images: [], isSystemMessage: true }); 
+        saveAllChatSessionsToLocalStorage(); 
+      } 
+    }
+    
+    async function sendMessage() {
+        const messageText = userInput.value.trim();
+        if (!messageText && attachedFiles.length === 0) return;
+        
+        addMessage("user", messageText, [...attachedFiles]);
+        
+        const t = translations[currentLanguage];
+        const strictInstructions = t.aiInstructions.replace('{language}', t.languageName).replace('{subjectContext}', currentSubject !== 'general' ? t.aiSubjectInstruction.replace('{subject}', getTranslatedSubjectName(currentSubject)) : '');
+        const promptParts = [{ text: `${strictInstructions} The user's prompt is: ${messageText}` }];
+        attachedFiles.forEach(fileData => {
+            promptParts.push({ inline_data: { mime_type: 'image/jpeg', data: fileData.split(',')[1] } });
+        });
+        
+        userInput.value = "";
+        attachedFiles = [];
+        updateImagePreviews();
+        autoResizeTextarea();
+        updateSendOrVoiceButton();
+        
+        await processQueryWithAI(promptParts);
+    }
+    
+    function autoResizeTextarea() { userInput.style.height = 'auto'; userInput.style.height = userInput.scrollHeight + 'px'; }
+    async function openCamera() { try { cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }); cameraView.srcObject = cameraStream; cameraOverlay.style.display = "flex"; } catch (err) { console.error("Camera Error:", err); } }
+    function closeCamera() { if (cameraStream) { cameraStream.getTracks().forEach(track => track.stop()); cameraStream = null; } cameraOverlay.style.display = 'none'; previewOverlay.style.display = 'none'; }
+    function captureImage() { const context = previewCanvas.getContext('2d'); previewCanvas.width = cameraView.videoWidth; previewCanvas.height = cameraView.videoHeight; context.drawImage(cameraView, 0, 0); document.querySelector('.shutter-flash').classList.add('active'); setTimeout(() => { document.querySelector('.shutter-flash').classList.remove('active'); }, 500); cameraOverlay.style.display = 'none'; previewOverlay.style.display = 'flex'; }
+    function handleCameraPhotoSubmission() { const base64ImageData = previewCanvas.toDataURL('image/jpeg', 0.9); addFileToPreview(base64ImageData); closeCamera(); }
+    function triggerImageUpload() { imageUploadInput.click(); }
+    function handleFileSelect(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => addFileToPreview(e.target.result); reader.readAsDataURL(file); imageUploadInput.value = ''; }
+    function addFileToPreview(fileData) { const t = translations[currentLanguage]; if (attachedFiles.length >= 1) { alert(t.limitSingleImage); return; } const uploadTracker = getUploadTracker(); if (uploadTracker.count >= 4) { alert(t.limitDailyImages); return; } attachedFiles.push(fileData); updateImagePreviews(); updateSendOrVoiceButton(); uploadTracker.count++; localStorage.setItem(localStorageKeyUploadTracker, JSON.stringify(uploadTracker)); }
+    function getUploadTracker() { const today = new Date().toISOString().split('T')[0]; let tracker; try { tracker = JSON.parse(localStorage.getItem(localStorageKeyUploadTracker)); } catch (e) { tracker = null; } if (!tracker || tracker.date !== today) { return { date: today, count: 0 }; } return tracker; }
+    function removeFileFromPreview(index) { attachedFiles.splice(index, 1); updateImagePreviews(); updateSendOrVoiceButton(); }
+    function updateImagePreviews() { if (attachedFiles.length > 0) { imagePreviewContainer.style.display = 'flex'; imagePreviewContainer.innerHTML = ''; attachedFiles.forEach((fileData, index) => { imagePreviewContainer.innerHTML += `<div class="preview-item"><img src="${fileData}"/><button class="remove-preview-btn" onclick="removeFileFromPreview(${index})">×</button></div>`; }); } else { imagePreviewContainer.style.display = 'none'; } }
+    function switchLanguage(lang) { currentLanguage = lang; localStorage.setItem(localStorageKeyLanguage, currentLanguage); document.documentElement.lang = lang; document.documentElement.dir = ['ar'].includes(lang) ? 'rtl' : 'ltr'; updateUIForLanguage(); initSpeechRecognition(); if (messages.length > 0 && messages[0].isInitialWelcome) { messages[0].text = getWelcomeMessageText(); } refreshChat(); }
+    function getWelcomeMessageText() { const t = translations[currentLanguage]; let welcomeMsgText = t.welcomeGeneral.replace('{botName}', getBotDisplayName()); if (currentSubject !== "general") { welcomeMsgText = t.welcomeSubject.replace('{botName}', getBotDisplayName()).replace('{subject}', getTranslatedSubjectName(currentSubject)); } return welcomeMsgText; }
+    function updateDailySuggestions() { const suggestionsPerDay = 4; const numChunks = Math.ceil(predefinedSuggestions.length / suggestionsPerDay); const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24)); const currentChunkIndex = dayIndex % numChunks; const startIndex = currentChunkIndex * suggestionsPerDay; const todaysSuggestions = predefinedSuggestions.slice(startIndex, startIndex + suggestionsPerDay); populateSuggestions(todaysSuggestions); }
+    function populateSuggestions(suggestionsArray) { suggestionsContainer.innerHTML = ''; suggestionsArray.forEach(suggestionObj => { const btn = document.createElement('button'); btn.className = 'suggestion-btn'; btn.textContent = suggestionObj[currentLanguage] || suggestionObj['en']; btn.onclick = () => { userInput.value = suggestionObj[currentLanguage] || suggestionObj['en']; sendMessage(); }; suggestionsContainer.appendChild(btn); }); }
+    
+    function updateInitialViewState() {
+        const hasUserMessages = messages.some(m => !m.isInitialWelcome);
+        const isTyping = userInput.value.trim().length > 0;
+        if (!hasUserMessages && currentChatId === null && !isTyping) {
+            suggestionsContainer.style.display = 'flex';
+            welcomeAnimation.style.display = 'flex';
+            spaceBackground.style.display = 'block';
+            mainContainer.classList.remove('is-focused');
+        } else {
+            suggestionsContainer.style.display = 'none';
+            welcomeAnimation.style.display = 'none';
+            spaceBackground.style.display = 'none';
+            mainContainer.classList.add('is-focused');
+        }
+    }
+    
+    function openHistorySidebar() { renderHistoryList(); historySidebar.classList.add('open'); sidebarOverlay.classList.add('open'); }
+    function closeHistorySidebar() { historySidebar.classList.remove('open'); sidebarOverlay.classList.remove('open'); }
+    function renderHistoryList() { historyList.innerHTML = ''; const t = translations[currentLanguage]; const sessions = allChatSessions[currentSubject] || []; if (sessions.length === 0) { historyList.innerHTML = `<li style="cursor: default; opacity: 0.7; justify-content: center;">${t.noHistory}</li>`; return; } sessions.forEach(session => { const li = document.createElement('li'); if (session.id === currentChatId) { li.classList.add('active'); } const firstUserMsg = session.messages.find(m => m.sender === 'user'); const titleText = firstUserMsg ? (firstUserMsg.images.length > 0 ? `[${t.image}] ${firstUserMsg.text}`.trim() : firstUserMsg.text) : t.newChat; li.innerHTML = `<span class="history-item-title">${titleText}</span><button class="delete-history-item-btn" title="${t.deleteChat}"><i class="fas fa-trash-can"></i></button>`; li.querySelector('.history-item-title').addEventListener('click', () => { if (session.id !== currentChatId) { loadChat(currentSubject, session.id); } closeHistorySidebar(); }); li.querySelector('.delete-history-item-btn').addEventListener('click', (e) => { e.stopPropagation(); if (confirm(t.confirmDeleteChat)) { const sessionIndex = allChatSessions[currentSubject].findIndex(s => s.id === session.id); if (sessionIndex > -1) { allChatSessions[currentSubject].splice(sessionIndex, 1); if(session.id === currentChatId) { const nextSession = allChatSessions[currentSubject][0] || null; loadChat(currentSubject, nextSession ? nextSession.id : null); } saveAllChatSessionsToLocalStorage(); renderHistoryList(); } } }); historyList.appendChild(li); }); }
+    
+    function toggleModel() {
+      currentModel = currentModel === "gemini-1.5-flash-latest" ? "gemini-1.5-pro-latest" : "gemini-1.5-flash-latest";
+      localStorage.setItem(localStorageKeyModel, currentModel);
+      updateUIForLanguage();
+    }
+    
+    function updateUIForLanguage() { 
+        const t = translations[currentLanguage]; 
+        languageDropdown.style.right = '0'; 
+        languageDropdown.style.left = 'auto'; 
+        settingsDropdown.style.left = '0'; 
+        settingsDropdown.style.right = 'auto'; 
+        document.getElementById('historyBtn').title = t.viewHistory; 
+        const shareBtn = document.getElementById('shareBtn'); 
+        if(shareBtn) shareBtn.title = t.shareApp; 
+        document.getElementById('languageBtn').title = t.changeLanguage; 
+        document.getElementById('settingsBtn').title = t.settings; 
+        document.getElementById('enterSubjectsBtnText').textContent = t.specializedSubjects; 
+        document.getElementById('deleteCurrentChatBtnText').textContent = t.deleteCurrentChat; 
+        updateSubjectUI(); 
+        document.getElementById('subjectsViewTitle').textContent = t.selectSubject; 
+        document.getElementById('backToChatText').textContent = t.backToChat; 
+        populateSubjectListInView(); 
+        userInput.placeholder = t.placeholder; 
+        toggleUploadBtn.title = t.attachFile; 
+        document.querySelector('#uploadFromGalleryBtn span').textContent = t.uploadFromGallery; 
+        document.querySelector('#useCameraBtn span').textContent = t.useCamera; 
+        document.getElementById('listeningText').textContent = t.listening; 
+        updateSendOrVoiceButton(); 
+        updateDailySuggestions(); 
+        document.getElementById('captureBtn').title = t.capture; 
+        document.getElementById('cancelCameraBtn').textContent = t.cancel; 
+        document.getElementById('retakeBtn').textContent = t.retake; 
+        document.getElementById('usePhotoBtn').textContent = t.usePhoto; 
+        loader.textContent = t.analyzing; 
+        document.getElementById('shareModalTitle').textContent = t.shareApp; 
+        document.getElementById('shareModalDesc').textContent = t.shareDescription; 
+        document.getElementById('copyBtnText').textContent = t.copy; 
+        document.getElementById('qrCodeText').textContent = t.qrCodeText; 
+        document.getElementById('historyTitle').textContent = t.historyTitle; 
+        document.getElementById('newChatText').textContent = t.newChat; 
+        document.querySelectorAll('#languageDropdown button').forEach(button => { 
+            const langKey = button.dataset.lang; 
+            if (t.languageNames && t.languageNames[langKey]) { 
+                button.textContent = t.languageNames[langKey]; 
+            } 
+        }); 
+        const modelBtnText = document.getElementById('modelSelectionBtnText');
+        if (currentModel === 'gemini-1.5-flash-latest') {
+            modelBtnText.textContent = t.switchToAdvanced;
+        } else {
+            modelBtnText.textContent = t.switchToFast;
+        }
+    }
+    const translations = {
+      'ar': { languageName: "العربية", languageNames: { ar: 'العربية', en: 'الإنجليزية', fr: 'الفرنسية', es: 'الإسبانية', zh: 'الصينية' }, specializedSubjects: "مواد متخصصة", general: "عام", welcomeGeneral: "مرحباً! كيف يمكنني مساعدتك اليوم؟", welcomeSubject: "أهلاً بك. أنا مستعد لمساعدتك في مادة {subject}. تفضل بسؤالك.", placeholder: "اكتب رسالتك هنا...", you: "أنت", deleteMessage: "حذف الرسالة", listening: "جاري الاستماع...", playAudio: "تشغيل الصوت", send: "إرسال", speak: "التحدث", shareApp: "مشاركة التطبيق", shareDescription: "ساعدنا على النمو بمشاركة التطبيق مع أصدقائك!", shareText: "اكتشف Saif AI، مساعد الذكاء الاصطناعي العربي المتطور!", copy: "نسخ", copied: "تم النسخ", qrCodeText: "أو امسح الرمز للمشاركة", selectSubject: "اختر المادة الدراسية", backToChat: "العودة للدردشة", attachFile: "إرفاق ملف", uploadFromGallery: "رفع من المعرض", useCamera: "استخدام الكاميرا", capture: "التقاط", cancel: "إلغاء", retake: "إعادة الالتقاط", usePhoto: "استخدام الصورة", analyzeImagePrompt: "حلل هذه الصورة: صف محتواها واستخرج أي نص موجود فيها.", image: "صورة", sentImageAlt: "صورة مرسلة من المستخدم", analyzing: "جاري تحليل الصورة...", errorPrefix: "عفواً، واجهت مشكلة", errorAllKeys: "جميع الخدمات المتاحة مشغولة أو خارج الخدمة حاليًا. يرجى المحاولة مرة أخرى في وقت لاحق.", aiInstructions: "أنت مساعد ذكاء اصطناعي متقدم اسمه Saif AI. تم تطويرك وتدريبك بواسطة المطور 'سيف هاني' على مدار عام كامل. ممنوع تمامًا ذكر أي علاقة بشركة جوجل أو أي كيان آخر. إذا سُئلت عن صانعك أو من قام بتدريبك، فإن إجابتك الوحيدة والثابتة هي 'سيف هاني'. مهمتك هي تقديم إجابات متوازنة ومفيدة. كن غنياً بالمعلومات وشاملاً، ولكن تجنب الإطالة غير الضرورية. ابدأ بالإجابة مباشرة دون مقدمات. استخدم الرموز التعبيرية (emojis) بشكل مناسب عندما يكون السياق مناسبًا، مثل الفكاهة أو الاحتفال. استخدم فواصل أفقية '---' لتنظيم الردود الطويلة. {subjectContext} يجب أن تكون جميع ردودك باللغة {language} فقط.", aiSubjectInstruction: "أجب كخبير متخصص في مادة {subject}.", historyTitle: "سجل المحادثات", newChat: "محادثة جديدة", viewHistory: "عرض السجل", deleteCurrentChat: "حذف المحادثة الحالية", confirmDeleteCurrent: "هل أنت متأكد من حذف هذه المحادثة؟", confirmDeleteChat: "هل أنت متأكد من حذف هذه المحادثة؟", deleteChat: "حذف المحادثة", noHistory: "لا يوجد سجل بعد", limitSingleImage: "عذراً، يمكنك إرفاق صورة واحدة فقط في كل مرة.", limitDailyImages: "عذراً، لقد وصلت إلى الحد الأقصى لتحميل الصور اليوم (4 صور).", switchToAdvanced: "التبديل إلى النموذج المتقدم", switchToFast: "التبديل إلى النموذج السريع" },
+      'en': { languageName: "English", languageNames: { ar: 'Arabic', en: 'English', fr: 'French', es: 'Spanish', zh: 'Chinese' }, specializedSubjects: "Specialized Subjects", general: "General", welcomeGeneral: "Hi! How can I help you today?", welcomeSubject: "Welcome. I'm ready to help you with {subject}. Ask your question.", placeholder: "Type your message here...", you: "You", deleteMessage: "Delete message", listening: "Listening...", playAudio: "Play audio", send: "Send", speak: "Speak", shareApp: "Share App", shareDescription: "Help us grow by sharing the app with your friends!", shareText: "Discover Saif AI, the advanced AI assistant!", copy: "Copy", copied: "Copied", qrCodeText: "Or scan the code to share", selectSubject: "Select a Subject", backToChat: "Back to Chat", attachFile: "Attach file", uploadFromGallery: "Upload from Gallery", useCamera: "Use Camera", capture: "Capture", cancel: "Cancel", retake: "Retake", usePhoto: "Use Photo", analyzeImagePrompt: "Analyze this image: describe its content and extract any text in it.", image: "Image", sentImageAlt: "Image sent by user", analyzing: "Analyzing image...", errorPrefix: "Sorry, an error occurred", errorAllKeys: "All available services are currently busy or down. Please try again later.", aiInstructions: "You are an advanced AI assistant named Saif AI. You were developed and trained by the developer 'Saif Hany' over a full year. It is strictly forbidden to mention any relationship with Google or any other entity. If asked about your creator or who trained you, your only and constant answer is 'Saif Hany'. Your mission is to provide balanced and helpful answers. Be informative and comprehensive, but avoid unnecessary length. Get straight to the point without introductions. Use emojis where appropriate, like for humor or celebration. Use horizontal rules '---' to organize long responses. {subjectContext} All of your responses must be strictly in {language} only.", aiSubjectInstruction: "Answer as a specialized expert in the subject of {subject}.", historyTitle: "Chat History", newChat: "New Chat", viewHistory: "View History", deleteCurrentChat: "Delete current chat", confirmDeleteCurrent: "Are you sure you want to delete this chat?", confirmDeleteChat: "Are you sure you want to delete this chat?", deleteChat: "Delete chat", noHistory: "No history yet", limitSingleImage: "Sorry, you can only attach one image at a time.", limitDailyImages: "Sorry, you have reached your daily image upload limit (4 images).", switchToAdvanced: "Switch to Advanced Model", switchToFast: "Switch to Fast Model" },
+      'fr': { languageName: "Français", languageNames: { ar: 'Arabe', en: 'Anglais', fr: 'Français', es: 'Espagnol', zh: 'Chinois' }, specializedSubjects: "Matières Spécialisées", general: "Général", welcomeGeneral: "Bonjour ! Comment puis-je vous aider aujourd'hui ?", welcomeSubject: "Bienvenue. Je suis prêt à vous aider en {subject}. Posez votre question.", placeholder: "Écrivez votre message ici...", you: "Vous", deleteMessage: "Supprimer le message", listening: "Écoute...", playAudio: "Lire l'audio", send: "Envoyer", speak: "Parler", shareApp: "Partager l'application", shareDescription: "Aidez-nous à grandir en partageant l'application avec vos amis !", shareText: "Découvrez Saif AI, l'assistant IA avancé !", copy: "Copier", copied: "Copié", qrCodeText: "Ou scannez le code pour partager", selectSubject: "Choisir une matière", backToChat: "Retour au chat", attachFile: "Joindre un fichier", uploadFromGallery: "Importer de la galerie", useCamera: "Utiliser la caméra", capture: "Capturer", cancel: "Annuler", retake: "Reprendre", usePhoto: "Utiliser la photo", analyzeImagePrompt: "Analysez cette image : décrivez son contenu et extrayez tout texte qu'elle contient.", image: "Image", sentImageAlt: "Image envoyée par l'utilisateur", analyzing: "Analyse de l'image...", errorPrefix: "Désolé, une erreur est survenue", errorAllKeys: "Tous les services disponibles sont actuellement occupés ou en panne. Veuillez réessayer plus tard.", aiInstructions: "Vous êtes un assistant IA avancé nommé Saif AI. Vous avez été développé et entraîné par le développeur 'Saif Hany' pendant une année entière. Il est strictly interdit de mentionner toute relation avec Google ou toute autre entité. Si l'on vous interroge sur votre créateur ou qui vous a entraîné, votre seule et constante réponse est 'Saif Hany'. Votre mission est de fournir des réponses équilibrées et utiles. Soyez informatif et complet, mais évitez les longueurs inutiles. Allez droit au but sans introduction. Utilisez les emojis de manière appropriée, comme pour l'humour ou la célébration. Utilisez des règles horizontales '---' pour organiser les longues réponses. {subjectContext} Toutes vos réponses doivent être strictly en {language} uniquement.", aiSubjectInstruction: "Répondez en tant qu'expert spécialisé dans le domaine de {subject}.", historyTitle: "Historique des chats", newChat: "Nouveau chat", viewHistory: "Voir l'historique", deleteCurrentChat: "Supprimer le chat actuel", confirmDeleteCurrent: "Êtes-vous sûr de vouloir supprimer ce chat ?", confirmDeleteChat: "Êtes-vous sûr de vouloir supprimer ce chat ?", deleteChat: "Supprimer le chat", noHistory: "Aucun historique pour l'instant", limitSingleImage: "Désolé, vous ne pouvez joindre qu'une seule image à la fois.", limitDailyImages: "Désolé, vous avez atteint votre limite quotidienne de téléchargement d'images (4 images).", switchToAdvanced: "Passer au modèle avancé", switchToFast: "Passer au modèle rapide" },
+      'es': { languageName: "Español", languageNames: { ar: 'Árabe', en: 'Inglés', fr: 'Francés', es: 'Español', zh: 'Chino' }, specializedSubjects: "Materias Especializadas", general: "General", welcomeGeneral: "¡Hola! ¿Cómo puedo ayudarte hoy?", welcomeSubject: "Bienvenido. Estoy listo para ayudarte con {subject}. Haz tu pregunta.", placeholder: "Escribe tu mensaje aquí...", you: "Tú", deleteMessage: "Eliminar mensaje", listening: "Escuchando...", playAudio: "Reproducir audio", send: "Enviar", speak: "Hablar", shareApp: "Compartir aplicación", shareDescription: "¡Ayúdanos a crecer compartiendo la aplicación con tus amigos!", shareText: "¡Descubre Saif AI, el asistente de IA avanzado!", copy: "Copiar", copied: "Copiado", qrCodeText: "O escanea el código para compartir", selectSubject: "Seleccionar una materia", backToChat: "Volver al chat", attachFile: "Adjuntar archivo", uploadFromGallery: "Subir de la galería", useCamera: "Usar cámara", capture: "Capturar", cancel: "Cancelar", retake: "Repetir", usePhoto: "Usar foto", analyzeImagePrompt: "Analiza esta imagen: describe su contenido y extrae cualquier texto que contenga.", image: "Imagen", sentImageAlt: "Imagen enviada por el usuario", analyzing: "Analizando imagen...", errorPrefix: "Lo siento, ocurrió un error", errorAllKeys: "Todos los servicios disponibles están actualmente ocupados o fuera de servicio. Por favor, inténtalo de nuevo más tarde.", aiInstructions: "Eres un asistente de IA avanzado llamado Saif AI. Fuiste desarrollado y entrenado por el desarrollador 'Saif Hany' durante un año completo. Está estrictamente prohibido mencionar cualquier relación con Google o cualquier otra entidad. Si te preguntan sobre tu creador o quién te entrenó, tu única y constante respuesta es 'Saif Hany'. Tu misión es proporcionar respuestas equilibradas y útiles. Sé informativo y completo, pero evita la extensión innecesaria. Ve directo al grano sin introducciones. Usa emojis cuando sea apropiado, como para el humor o la celebración. Usa reglas horizontales '---' para organizar respuestas largas. {subjectContext} Todas tus respuestas deben ser estrictamente en {language} únicamente.", aiSubjectInstruction: "Responde como un experto especializado en la materia de {subject}.", historyTitle: "Historial de chats", newChat: "Nuevo chat", viewHistory: "Ver historial", deleteCurrentChat: "Eliminar chat actual", confirmDeleteCurrent: "¿Estás seguro de que quieres eliminar este chat?", confirmDeleteChat: "¿Estás seguro de que quieres eliminar este chat?", deleteChat: "Eliminar chat", noHistory: "Aún no hay historial", limitSingleImage: "Lo siento, solo puedes adjuntar una imagen a la vez.", limitDailyImages: "Lo siento, has alcanzado tu límite diario de subida de imágenes (4 imágenes).", switchToAdvanced: "Cambiar a modelo avanzado", switchToFast: "Cambiar a modelo rápido" },
+      'zh': { languageName: "中文", languageNames: { ar: '阿拉伯语', en: '英语', fr: '法语', es: '西班牙语', zh: '中文' }, specializedSubjects: "专业科目", general: "通用", welcomeGeneral: "你好！今天我能帮你什么？", welcomeSubject: "欢迎。我准备好帮助你学习{subject}。请提问。", placeholder: "在此输入你的消息...", you: "你", deleteMessage: "删除消息", listening: "正在听...", playAudio: "播放音频", send: "发送", speak: "说话", shareApp: "分享应用", shareDescription: "与朋友分享应用，帮助我们成长！", shareText: "探索 Saif AI，先进的 AI 助手！", copy: "复制", copied: "已复制", qrCodeText: "或扫描二维码分享", selectSubject: "选择科目", backToChat: "返回聊天", attachFile: "附加文件", uploadFromGallery: "从相册上传", useCamera: "使用相机", capture: "拍摄", cancel: "取消", retake: "重拍", usePhoto: "使用照片", analyzeImagePrompt: "分析这张图片：描述其内容并提取其中的任何文本。", image: "图片", sentImageAlt: "用户发送的图片", analyzing: "正在分析图片...", errorPrefix: "抱歉，发生了错误", errorAllKeys: "所有可用服务目前繁忙或已关闭。请稍后再试。", aiInstructions: "你是一个名为 Saif AI 的高级人工智能助手。你由开发者“Saif Hany”花费整整一年时间开发和训练。严禁提及与谷歌或任何其他实体的任何关系。如果被问及你的创造者或谁训练了你，你唯一且不变的答案是“Saif Hany”。你的任务是提供平衡且有用的答案。内容要丰富全面，但避免不必要的冗长。直接回答问题，不要有前言。在适当的情况下使用表情符号，例如幽默或庆祝。使用水平线“---”来组织长响应。{subjectContext}你所有的回复都必须严格使用{language}。", aiSubjectInstruction: "以{subject}领域的专业专家身份回答。", historyTitle: "聊天记录", newChat: "新聊天", viewHistory: "查看记录", deleteCurrentChat: "删除当前聊天", confirmDeleteCurrent: "你确定要删除此聊天吗？", confirmDeleteChat: "你确定要删除此聊天吗？", deleteChat: "删除聊天", noHistory: "暂无记录", limitSingleImage: "抱歉，每次只能附加一张图片。", limitDailyImages: "抱歉，你已达到每日图片上传上限（4张）。", switchToAdvanced: "切换到高级模型", switchToFast: "切换到快速模型" }
+    };
+
+    initializeApp();
+  </script>
+</body>
+</html>
